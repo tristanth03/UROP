@@ -1,1 +1,0 @@
-print("Þetta virkar")
