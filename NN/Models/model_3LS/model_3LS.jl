@@ -104,4 +104,4 @@ println("Loss update: $loss_update")
 
 # Save parameters
 params_dict = Dict("params_3LS" => params_3LS)
-save("model_params.jld2", params_dict)
+save("params_m_3LS.jld2", params_dict)
