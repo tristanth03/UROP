@@ -61,23 +61,31 @@ function loss_of(model_3LS)
     return loss_3LS
 end
 
-function train_batch(X_train, Y_train, loss, model, opt, params, epochs,print_gap)
+function train_batch(X_train, Y_train, loss, model, opt, params, epochs, print_gap, params_file)
     """
     In: data, loss, optimizer, parameters, iteration(epochs)
-    Out: trained model
+    Out: trained model with saved parameters
     """
+    
+    if isfile(params_file)
+        println("Loading parameters from file: $params_file")
+        loaded_dict = load(params_file)
+        Flux.loadparams!(params, loaded_dict["model_params"])
+    end
     
     data = [(X_train, Y_train)]
     for epoch in 1:epochs
         Flux.train!(loss, params, data, opt)
         
-        
         if epoch % print_gap == 0 
             println("Epoch $epoch of $epochs completed.")
-            
         end
-        
     end
+    
+    # Save parameters after training
+    println("Saving parameters to file: $params_file")
+    param_dict = Dict("model_params" => params)
+    save(params_file, param_dict)
 end
 
 
@@ -88,20 +96,18 @@ end
 X_training,Y_training,X_testing,Y_testing = load_MNIST()
 
 # Inputs
-
+# Parameters file path
+params_file = "params_m_3LS.jld2"
 opt = Descent(lr) # optimizer
 m_3LS,params_3LS = model_3LS()
 loss_3LS = loss_of(m_3LS)
-epochs = 10
+epochs = 10000
 lr = 0.1 # learning rate
-print_gap = 2 # The step between process prints
+print_gap = 50 # The step between process prints
 
 # Training
 
-m_3LS_trained = train_batch(X_training, Y_training, loss_3LS, m_3LS, opt, params_3LS, epochs, print_gap)
+m_3LS_trained = train_batch(X_training, Y_training, loss_3LS, m_3LS, opt, params_3LS, epochs, print_gap, params_file)
 loss_update = loss_3LS(X_training,Y_training)
 println("Loss update: $loss_update")
 
-# Save parameters
-params_dict = Dict("params_3LS" => params_3LS)
-save("params_m_3LS.jld2", params_dict)
