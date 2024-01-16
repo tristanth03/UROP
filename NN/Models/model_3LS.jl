@@ -40,4 +40,15 @@ function model_3LS(scale)
     Using the sigmoid activation function.
     """
 
+    
+    m_3LS = Chain(
+        Dense(scale*scale,60,sigmoid), # Input Layer -> Hidden Layer 1
+        Dense(60,60,sigmoid), # Hidden Layer 1 -> Hidden Layer 2
+        Dense(60,10,sigmoid) # Hidden Layer 2 -> Output Layer
+        )
+
+    param_3LS = Flux.params(m_3LS) # The parameters
+
+    return m_3LS,param_3LS
+    
 end
