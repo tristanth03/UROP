@@ -12,6 +12,7 @@ using ImageInTerminal
 using ImageIO
 using ImageMagick
 using LinearAlgebra
+using JLD2
 
 #--------- Functions
 function load_MNIST()
@@ -41,7 +42,7 @@ function model_3LS()
 
     
     m_3LS = Chain(
-        Dense(784,60,sigmoid), # Input Layer -> Hidden Layer 1
+        Dense(28*28,60,sigmoid), # Input Layer -> Hidden Layer 1
         Dense(60,60,sigmoid), # Hidden Layer 1 -> Hidden Layer 2
         Dense(60,10,sigmoid) # Hidden Layer 2 -> Output Layer
         )
@@ -55,23 +56,25 @@ function loss_of(model_3LS)
     """
     For a loss function we use MSE(mean squared error).
     """
-    
-   
     loss_3LS(X_LS3,Y_LS3) =  Flux.Losses.mse(model_3LS(X_LS3),Y_LS3) 
 
     return loss_3LS
 end
 
-function train_batch(X_train, Y_train, loss, model, opt, params, epochs, print_gap)
+function train_batch(X_train, Y_train, loss, model, opt, params, epochs,print_gap)
     """
-    Trains the model as a batch, ever
+    In: data, loss, optimizer, parameters, iteration(epochs)
+    Out: trained model
     """
     
     data = [(X_train, Y_train)]
     for epoch in 1:epochs
         Flux.train!(loss, params, data, opt)
+        
+        
         if epoch % print_gap == 0 
             println("Epoch $epoch of $epochs completed.")
+            
         end
         
     end
@@ -85,9 +88,20 @@ end
 X_training,Y_training,X_testing,Y_testing = load_MNIST()
 
 # Inputs
-lr = 0.1 # learning rate
-opti = Descent(lr) # optimizer
-print_gap = 5 # The step between process prints
+
+opt = Descent(lr) # optimizer
 m_3LS,params_3LS = model_3LS()
+loss_3LS = loss_of(m_3LS)
+epochs = 10
+lr = 0.1 # learning rate
+print_gap = 2 # The step between process prints
 
 # Training
+
+m_3LS_trained = train_batch(X_training, Y_training, loss_3LS, m_3LS, opt, params_3LS, epochs, print_gap)
+loss_update = loss_3LS(X_training,Y_training)
+println("Loss update: $loss_update")
+
+# Save parameters
+params_dict = Dict("params_3LS" => params_3LS)
+save("model_params.jld2", params_dict)
