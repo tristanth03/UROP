@@ -11,6 +11,7 @@ using ImageMagick
 using LinearAlgebra
 using JLD2
 
+include("NN.jl")
 
 function model_3LS()
     """
@@ -35,7 +36,6 @@ function loss_of(model_3LS)
     For a loss function we use MSE(mean squared error).
     """
     loss_3LS(X_LS3,Y_LS3) =  Flux.Losses.mse(model_3LS(X_LS3),Y_LS3) 
-
     return loss_3LS
 end
 
@@ -44,6 +44,7 @@ opt = Descent(lr) # optimizer
 m_3LS, params_3LS = model_3LS()
 loss_3LS = loss_of(m_3LS)
 
-myNN = NN(m_3LS, loss_3LS, opt)
+#print(typeof(loss_3LS))
 
-train(myNN, 10, "params.jld2")
+myNN = NN(m_3LS,0.1)
+train(myNN, 10, "params_m_3LS_epo10.jld2")
