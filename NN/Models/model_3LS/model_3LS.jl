@@ -1,6 +1,7 @@
 using Images
 using MLDatasets
 using Flux
+using BSON
 
 #--------- Functions
 function load_MNIST()
@@ -70,14 +71,17 @@ end
 X_training, Y_training, X_testing, Y_testing = load_MNIST()
 
 # Inputs
-lr = 0.1                     # learning rate
+lr = 0.01                     # learning rate
 opt = Descent(lr)            # optimizer
 m_3LS, params_3LS = model_3LS()
 loss_3LS = loss_of(m_3LS)
-epochs = 100
-print_gap = 1             # The step between process prints
+epochs = 1
+print_gap = 1               # The step between process prints
+
 
 # Training
 train_batch(X_training, Y_training, loss_3LS, opt, params_3LS, epochs, print_gap)
 loss_update = loss_3LS(X_training, Y_training)
 println("Loss update: $loss_update")
+
+
