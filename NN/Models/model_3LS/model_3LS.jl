@@ -34,6 +34,26 @@ function load_MNIST()
     return X_training,Y_training,X_testing,Y_testing
 end
 
+#--------- Functions
+function load_MNIST()
+    """
+    Loading the MNIST dataset.
+    10 classes of digits from 0 to 9,
+    each with 28x28 pixel dimensions.
+    X: Grayscale vector, Y: Correct label.
+    """
+
+    X_training, Y_training = MNIST(split = :train)[:] 
+    X_testing, Y_testing = MNIST(split = :test)[:]
+
+    X_training = Flux.flatten(X_training)
+    X_testing = Flux.flatten(X_testing)
+    Y_training = Flux.onehotbatch(Y_training,0:9)
+    Y_testing = Flux.onehotbatch(Y_testing,0:9)
+
+    return X_training,Y_training,X_testing,Y_testing
+end
+
 function model_3LS()
     """
     A 3-layer model using 60 nodes in the inner layers.
@@ -61,15 +81,15 @@ function loss_of(model_3LS)
     return loss_3LS
 end
 
-function train_batch(X_train, Y_train, loss, model, opt, params, epochs, print_gap, params_file)
+function train_batch(X_train, Y_train, loss, opt, params, epochs, print_gap, input_params)
     """
     In: data, loss, optimizer, parameters, iteration(epochs)
     Out: trained model with saved parameters
     """
     
-    if isfile(params_file)
-        println("Loading parameters from file: $params_file")
-        loaded_dict = load(params_file)
+    if isfile(input_params)
+        println("Loading parameters from file: $input_params")
+        loaded_dict = load(input_params)
         Flux.loadparams!(params, loaded_dict["model_params"])
     end
     
@@ -81,13 +101,42 @@ function train_batch(X_train, Y_train, loss, model, opt, params, epochs, print_g
             println("Epoch $epoch of $epochs completed.")
         end
     end
-    
-    # Save parameters after training
-    println("Saving parameters to file: $params_file")
-    param_dict = Dict("model_params" => params)
-    save(params_file, param_dict)
 end
 
+function save_parameters(params, filename)
+    """
+    This function saves the current parameters into a jld2 file
+    It double checks not to override existing files without permission
+    """
+
+    filename = check_jld2(filename)
+
+    if isfile(filename)
+        println("The file $filename already exists. Do you want to override it? (y/n): ")
+        user_response = lowercase(readline())
+        
+        if user_response != "y"
+            println("Parameters not saved.")
+            return # if we get to this point, the function will terminate
+        end
+    end
+    
+    param_dict = Dict("model_params" => params)
+    save(filename, param_dict)
+    println("Parameters saved to $filename.")
+end
+
+function check_jld2(filename)
+    """
+    This function returns the correct jld2 format for the filename 
+    """
+    base, ext = splitext(filename) # ext: file EXTension
+    
+    if ext == ".jld2"
+        return filename
+    else
+        return base * ".jld2"
+    end
 
 
 #--------- Main Code
@@ -107,7 +156,6 @@ print_gap = 50 # The step between process prints
 
 # Training
 
-m_3LS_trained = train_batch(X_training, Y_training, loss_3LS, m_3LS, opt, params_3LS, epochs, print_gap, params_file)
+train_batch(X_training, Y_training, loss_3LS, opt, params_3LS, epochs, print_gap, params_file)
 loss_update = loss_3LS(X_training,Y_training)
 println("Loss update: $loss_update")
-
