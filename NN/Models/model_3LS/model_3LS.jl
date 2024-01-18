@@ -147,11 +147,11 @@ X_training,Y_training,X_testing,Y_testing = load_MNIST()
 # Inputs
 # Parameters file path
 params_file = "params_m_3LS.jld2"
+lr = 0.1 # learning rate
 opt = Descent(lr) # optimizer
 m_3LS,params_3LS = model_3LS()
 loss_3LS = loss_of(m_3LS)
 epochs = 10000
-lr = 0.1 # learning rate
 print_gap = 50 # The step between process prints
 
 # Training

@@ -24,7 +24,6 @@ using JLD2
 struct NN
     model
     loss_funct
-    lr              # learning rate
     opt             # optimizer
 end
 
@@ -57,20 +56,19 @@ function loading_bar(epochs)
     return 1
 end
 
-function train_batch(nn::NN, epochs, input_params)
+function train(nn::NN, epochs, input_params)
     """
-    In: NN struct, iteration(epochs)
+    In: NN struct, iteration(epochs), input_params
     Out: trained model with saved parameters
     """
 
-    # Create loading_bar
+    # Create loading_bar - If you want to use it
     loading_bar = loading_bar(epochs)
 
     # Load MNIST data
     X_train, Y_train, _, _ = load_MNIST()
     
     if isfile(input_params)
-        println("Loading parameters from file: $input_params")
         loaded_dict = load(input_params)
         Flux.loadparams!(nn.model, loaded_dict["model_params"])
     end
@@ -79,7 +77,13 @@ function train_batch(nn::NN, epochs, input_params)
     for epoch in 1:epochs
         Flux.train!(nn.loss_funct, nn.model, data, nn.opt)
     end
+    println("Training completed")
 end
 
 
-train(NN, opt, epoch)
+"""
+DEMO - how to use
+
+myNN = NN(model, loss, opt)
+train(myNNNN, 10, "params.jld2")
+"""
