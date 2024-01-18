@@ -16,7 +16,6 @@ using ImageIO
 using ImageMagick
 using LinearAlgebra
 using JLD2
-
 # --------- Struct --------- #
 struct NN
     model
@@ -39,14 +38,14 @@ function load_MNIST()
     Y_testing = Flux.onehotbatch(Y_testing,0:9)
     return X_training,Y_training,X_testing,Y_testing
 end
-function loading_bar(epochs)
-    """
-    Function creates a loading bar for the training process
+# function loading_bar(epochs)
+#     """
+#     Function creates a loading bar for the training process
         
-    ATTENTION: this feature might slow down the traing process alot!
-    """
-    return 1
-end
+#     ATTENTION: this feature might slow down the traing process alot!
+#     """
+#     return 1
+# end
 function train(nn::NN, epochs, input_params)
     """
     In: NN struct, iteration(epochs), input_params
@@ -54,8 +53,8 @@ function train(nn::NN, epochs, input_params)
     """
 
     # Create loading_bar - If you want to use it
-    loading_bar = loading_bar(epochs)
-    #loading_bar = loading_bar(epochs)
+    # loading_bar = loading_bar(epochs)
+    # #loading_bar = loading_bar(epochs)
 
     # Load MNIST data
     X_train, Y_train, _, _ = load_MNIST()
@@ -71,6 +70,11 @@ function train(nn::NN, epochs, input_params)
     end
     println("Training completed")
 end
+
+
+
+
+
 """
 DEMO - how to use
 myNN = NN(model, loss, opt)

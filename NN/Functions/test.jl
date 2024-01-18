@@ -41,11 +41,9 @@ end
 
 lr = 0.1 # learning rate
 opt = Descent(lr) # optimizer
-m_3LS,params_3LS = model_3LS()
+m_3LS, params_3LS = model_3LS()
 loss_3LS = loss_of(m_3LS)
-
-include("NN.jl")
 
 myNN = NN(m_3LS, loss_3LS, opt)
 
-train_batch(myNN, 1,"NN\\Functions\\params_m_3LS_epo10.jld2")
+train(myNN, 10, "params.jld2")
