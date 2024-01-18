@@ -47,4 +47,5 @@ loss_3LS = loss_of(m_3LS)
 include("NN.jl")
 
 myNN = NN(m_3LS, loss_3LS, opt)
-train(myNN, 1,"NN\\Functions\\params_m_3LS_epo10.jld2")
+
+train_batch(myNN, 1,"NN\\Functions\\params_m_3LS_epo10.jld2")
