@@ -21,7 +21,6 @@ struct NN
     model::Any
     lr
 end
-
 # --------- Functions --------- #
 
 function load_MNIST()
@@ -44,32 +43,34 @@ function loss_of(model)
     """
     For a loss function, we use MSE (mean squared error).
     """
-
     loss(X, Y) = Flux.Losses.mse(model(X), Y)
     return loss
 end
 
-function train(nn::NN, epochs, input_params)
+function train(nn::NN, epochs, input_params=nothing)
     """
     In: NN struct, iteration(epochs), input_params
     Out: trained model with saved parameters
     """
-
-    # Loss
-    loss_fn = loss_of(nn.model)
-
     # Load MNIST data
     X_train, Y_train, _, _ = load_MNIST()
-
-    if isfile(input_params)
-        loaded_dict = load(input_params)
-        Flux.loadparams!(nn.model, loaded_dict["model_params"])
-    end
-
     data = [(X_train, Y_train)]
 
+    # Check if using custom parameters
+    if input_params !== nothing
+        # Loading parameters
+        if isfile(input_params)
+            loaded_dict = load(input_params)
+            Flux.loadparams!(nn.model, loaded_dict["model_params"])
+        end
+    else
+        # Initalizes with "Random parameters"
+        Flux.params(nn.model)
+    end
+
+    # Actual training
     for epoch in 1:epochs
-        Flux.train!(loss_fn, Flux.params(nn.model), data, Descent(nn.lr))
+        Flux.train!(loss_of(nn.model), Flux.params(nn.model), data, Descent(nn.lr))
     end
 
     println("Training completed")
