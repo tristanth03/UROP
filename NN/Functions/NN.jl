@@ -63,7 +63,7 @@ function train(nn::NN, epochs, input_params)
     """
 
     # Create loading_bar - If you want to use it
-    loading_bar = loading_bar(epochs)
+    #loading_bar = loading_bar(epochs)
 
     # Load MNIST data
     X_train, Y_train, _, _ = load_MNIST()
