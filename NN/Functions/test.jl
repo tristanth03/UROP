@@ -1,3 +1,17 @@
+# --------- Packages --------- #
+# Make sure they are installed
+using Images
+using FileIO
+using MLDatasets
+using Flux
+using ImageShow
+using ImageInTerminal
+using ImageIO
+using ImageMagick
+using LinearAlgebra
+using JLD2
+
+
 function model_3LS()
     """
     A 3-layer model using 60 nodes in the inner layers.
@@ -33,4 +47,4 @@ loss_3LS = loss_of(m_3LS)
 include("NN.jl")
 
 myNN = NN(m_3LS, loss_3LS, opt)
-train(myNN, 1, params_3LS)
+train(myNN, 1,"NN\\Functions\\params_m_3LS_epo10.jld2")

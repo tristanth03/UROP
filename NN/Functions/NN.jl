@@ -23,7 +23,7 @@ using JLD2
 # --------- Struct --------- #
 struct NN
     model
-    loss_funct
+    loss
     opt             # optimizer
 end
 
@@ -56,29 +56,29 @@ function loading_bar(epochs)
     return 1
 end
 
-function train(nn::NN, epochs, input_params)
-    """
-    In: NN struct, iteration(epochs), input_params
-    Out: trained model with saved parameters
-    """
+function train(nn::NN, epochs::Int, input_params::String)
+    # Load your training data (X_LS3, Y_LS3) here if not already loaded
 
-    # Create loading_bar - If you want to use it
-    #loading_bar = loading_bar(epochs)
+    # Extract model, loss, and optimizer from the NN object
+    model = nn.model
+    loss = nn.loss
+    opt = nn.optimizer
 
-    # Load MNIST data
-    X_train, Y_train, _, _ = load_MNIST()
-    
-    if isfile(input_params)
-        loaded_dict = load(input_params)
-        Flux.loadparams!(nn.model, loaded_dict["model_params"])
-    end
-    
-    data = [(X_train, Y_train)]
+    # Prepare data in Flux format (you might need to adjust this based on your data structure)
+    data = [(X_LS3, Y_LS3) for (X_LS3, Y_LS3) in zip(X_LS3_data, Y_LS3_data)]
+
+    # Training loop
     for epoch in 1:epochs
-        Flux.train!(nn.loss_funct, nn.model, data, nn.opt)
+        Flux.train!(loss, Flux.params(model), data, opt)
+
+        # Print or log training progress if needed
+        println("Epoch $epoch: Loss = $(Flux.Losses.mse(model(X_LS3), Y_LS3))")
     end
-    println("Training completed")
+
+    # Save trained model parameters
+    Flux.save(params(model), input_params)
 end
+
 
 
 """
