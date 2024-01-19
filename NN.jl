@@ -14,8 +14,10 @@ Authors: Axel Bjarkar Sigurjónsson and Tristan Þórðarson
 # --------- Packages --------- #
 # Make sure they are installed
 using Images
-using FileIO
 using MLDatasets
+using BSON
+using Random
+using FileIO
 using Flux
 using ImageShow
 using ImageInTerminal
