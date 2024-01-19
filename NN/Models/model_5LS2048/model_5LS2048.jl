@@ -82,7 +82,7 @@ elapsed_time = @elapsed begin
     opt = Adam(lr)            # optimizer
     m_5LS2048, params_5LS2048 = model_5LS2048()
     loss_5LS2048 = loss_of(m_5LS2048)
-    epochs = 10
+    epochs = 1
     print_gap = 1            # The step between process prints
 
 
