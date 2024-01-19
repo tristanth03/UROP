@@ -154,6 +154,7 @@ function check_ext(filename)
         else
             return base * ".jld2"
         end
+    end
     # can change to include bson files
 end
 
