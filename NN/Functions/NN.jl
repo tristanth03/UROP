@@ -58,7 +58,7 @@ function loss_of(model)
     return loss
 end
 
-function train(nn::NN, epochs, input_params=nothing)
+function train(nn::NN, epochs, input_params)
     """
     Function trains NN model with either custom or "random" parameters
     """
@@ -85,6 +85,7 @@ function train(nn::NN, epochs, input_params=nothing)
     end
 
     println("Training completed")
+    
 end
 
 function save_parameters(nn::NN, filename)
