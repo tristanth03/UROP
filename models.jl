@@ -33,9 +33,7 @@ function model_5LS2048()
         Dense(2048,10,sigmoid) # Hidden Layer 4 -> Output Layer
         )
 
-    param_5LS2048 = Flux.params(m_5LS2048) # The parameters
-
-    return m_5LS2048,param_5LS2048
+    return m_5LS2048
 end
 
 function model_3LS()
@@ -49,6 +47,5 @@ function model_3LS()
         Dense(60, 60, sigmoid),     # Hidden Layer 1 -> Hidden Layer 2
         Dense(60, 10, sigmoid)      # Hidden Layer 2 -> Output Layer
     )
-
     return m_3LS
 end

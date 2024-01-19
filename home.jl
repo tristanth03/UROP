@@ -14,14 +14,14 @@ include("models.jl")
 
 # ---------- CONSTANTS ---------- #
 MODEL  = model_3LS()
-OPT    = "GD"        # OPT can be "GD" or "ADAM"... for now ;)
-LR     = 0.1
+OPT    = "ADAM"        # OPT can be "GD" or "ADAM"... for now ;)
+LR     = 0.01
 EPOCHS = 10
 
 # ---------- oooOOOooo ---------- #
 elapsed_time = @elapsed begin
 
-    myNN = NN(MODEL,LR)
+    myNN = NN(MODEL,OPT,LR)
     train(myNN,EPOCHS)
 
 end # stopwatch stops

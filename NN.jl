@@ -29,7 +29,8 @@ using JLD2
 # --------- Struct --------- #
 struct NN
     model::Any
-    lr          # learning rate 
+    opt         # optimatzation method, so far only GD and ADAM
+    lr          # learning rate
 end
 
 # --------- Functions --------- #
@@ -60,6 +61,30 @@ function loss_of(model)
     return loss
 end
 
+function get_loss(nn::NN)
+    """
+    Evaluates loss function
+    """
+
+    X_training, Y_training, _, _ = load_MNIST()
+    model = nn.model
+    loss_fn = loss_of(model)
+    loss_update = loss_fn(X_training, Y_training)
+    return loss_update
+end
+
+function opt(nn::NN)
+    """
+    Function return the appropriate optimatzation method
+    """
+
+    if nn.opt == "GD"
+        return Descent(nn.lr)
+    elseif nn.opt == "ADAM"
+        return Adam(nn.lr)
+    end
+end
+
 function train(nn::NN, epochs, input_params=nothing)
     """
     Function trains NN model with either custom or "random" parameters
@@ -83,7 +108,7 @@ function train(nn::NN, epochs, input_params=nothing)
 
     # Actual training
     for epoch in 1:epochs
-        Flux.train!(loss_of(nn.model), Flux.params(nn.model), data, Descent(nn.lr))
+        Flux.train!(loss_of(nn.model), Flux.params(nn.model), data, opt(nn))
     end
 
     println("Training completed")
