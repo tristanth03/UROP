@@ -5,9 +5,16 @@ This file includes models that the NN.jl struct takes in as a "model" parameter
 # ----------- Packages ----------- #
 using Images
 using MLDatasets
-using Flux
 using BSON
 using Random
+using FileIO
+using Flux
+using ImageShow
+using ImageInTerminal
+using ImageIO
+using ImageMagick
+using LinearAlgebra
+using JLD2
 # Make sure you have the packages installed.
 
 # ----------- Models ----------- #
@@ -43,7 +50,5 @@ function model_3LS()
         Dense(60, 10, sigmoid)      # Hidden Layer 2 -> Output Layer
     )
 
-    param_3LS = Flux.params(m_3LS) # The parameters
-
-    return m_3LS, param_3LS
+    return m_3LS
 end
