@@ -2,6 +2,8 @@ using Images
 using MLDatasets
 using Flux
 using BSON
+using Random
+
 
 elapsed_time = @elapsed begin
     #--------- Functions
@@ -73,11 +75,11 @@ elapsed_time = @elapsed begin
 
     # Inputs
     lr = 0.1                     # learning rate
-    opt = Descent(lr)            # optimizer
+    opt = Adam(lr)            # optimizer
     m_3LS, params_3LS = model_3LS()
     loss_3LS = loss_of(m_3LS)
     epochs = 10
-    print_gap = 1               # The step between process prints
+    print_gap = 1           # The step between process prints
 
 
     # Training

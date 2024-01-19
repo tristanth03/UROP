@@ -50,6 +50,7 @@ function loss_of(model)
 end
 
 function train(nn::NN, epochs, input_params)
+    
     """
     In: NN struct, iteration(epochs), input_params
     Out: trained model with saved parameters
@@ -73,6 +74,7 @@ function train(nn::NN, epochs, input_params)
     end
 
     println("Training completed")
+    
 end
 
 # DEMO - how to use
