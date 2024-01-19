@@ -121,7 +121,7 @@ function save_parameters(nn::NN, filename)
     """
 
     # Check if filename is valid
-    filename = check_jld2(filename)
+    filename = check_ext(filename)
     
     # Check if overriding a file
     if isfile(filename)
@@ -140,7 +140,7 @@ function save_parameters(nn::NN, filename)
     println("Parameters saved to $filename")
 end
 
-function check_jld2(filename)
+function check_ext(filename)
     """
     This function returns the correct jld2 format for the filename 
     """
@@ -148,10 +148,29 @@ function check_jld2(filename)
     # Check if user already put exrension
     # ext: file EXTension
     base, ext = splitext(filename) 
+    if filetype == "jld2"
+        if ext == ".jld2"
+            return filename
+        else
+            return base * ".jld2"
+        end
+    # can change to include bson files
+end
+
+function accuracy(nn::NN)
+    """
+    Evaluates the accuracy of the neural network on the MNIST testing set
+    """
+
+    X_testing, Y_testing = load_MNIST()[3:4]
+    model = nn.model
+
+    Y_pred = argmax(model(X_testing), dims=1)
+    Y_true = argmax(Y_testing, dims=1)
+
+    correct_predictions = sum(Y_pred .== Y_true)
+    total_samples = size(Y_testing)[2]
     
-    if ext == ".jld2"
-        return filename
-    else
-        return base * ".jld2"
-    end
+    acc = correct_predictions / total_samples
+    return acc
 end

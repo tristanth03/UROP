@@ -12,7 +12,7 @@ include("models.jl")
 MODEL  = model_3LS()
 OPT    = "ADAM"        # OPT can be "GD" or "ADAM"... for now ;)
 LR     = 0.01
-EPOCHS = 10
+EPOCHS = 400
 
 # ---------- oooOOOooo ---------- #
 elapsed_time = @elapsed begin
@@ -23,3 +23,7 @@ elapsed_time = @elapsed begin
 end # stopwatch stops
 println("Elapsed time: $elapsed_time seconds")
 println("Loss: ",get_loss(myNN))
+println("Accuracy: ",accuracy(myNN))
+
+# to save model as bson file:
+# @save "filename.bson" model=myNN.model
