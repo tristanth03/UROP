@@ -12,7 +12,7 @@ include("models.jl")
 MODEL  = model_3LS()
 OPT    = "ADAM"        # OPT can be "GD" or "ADAM"... for now ;)
 LR     = 0.01
-EPOCHS = 400
+EPOCHS = 4
 
 # ---------- oooOOOooo ---------- #
 elapsed_time = @elapsed begin
