@@ -1,4 +1,9 @@
 """
+
+Authors: Axel Bjarkar Sigurjónsson, Tristan Þórðarson
+Aknowledgements: 
+
+
 README
 
 DEMO - how to use

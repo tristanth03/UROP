@@ -1,4 +1,7 @@
 """
+Authors: Tristan Þórðarson, Axel Bjarkar Sigurjónsson
+Aknowledgements: 
+
 This file includes models that the NN.jl struct takes in as a "model" parameter
 """
 

@@ -14,7 +14,7 @@ OPT    = "ADAM"        # OPT can be "GD" or "ADAM"... for now ;)
 LR     = 0.01
 EPOCHS = 4
 
-# ---------- oooOOOooo ---------- #
+# ----------  ---------- #
 elapsed_time = @elapsed begin
 
     myNN = NN(MODEL,OPT,LR)
