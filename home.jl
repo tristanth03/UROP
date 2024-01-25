@@ -26,4 +26,4 @@ println("Loss: ",get_loss(myNN))
 println("Accuracy: ",accuracy(myNN))
 
 # to save model as bson file:
-# @save "filename.bson" model=myNN.model
+@save "filename.bson" model=myNN.model
