@@ -108,11 +108,11 @@ function train(nn::NN, epochs, input_params=nothing)
         Flux.params(nn.model)
     end
 
-    loss_history = []
+    # loss_history = []
     # Actual training
     for epoch in 1:epochs
         Flux.train!(loss_of(nn.model), Flux.params(nn.model), data, opt(nn))
-        push!(loss_history,get_loss(nn))
+        # push!(loss_history,get_loss(nn))
     
     end
 
