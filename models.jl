@@ -9,7 +9,6 @@ This file includes models that the NN.jl struct takes in as a "model" parameter
 using Images
 using MLDatasets
 using BSON
-using Random
 using FileIO
 using Flux
 using ImageShow
@@ -17,7 +16,7 @@ using ImageInTerminal
 using ImageIO
 using ImageMagick
 using LinearAlgebra
-using JLD2
+
 # Make sure you have the packages installed.
 
 # ----------- Models ----------- #
