@@ -16,6 +16,7 @@ using ImageInTerminal
 using ImageIO
 using ImageMagick
 using LinearAlgebra
+using JLD2
 
 # Make sure you have the packages installed.
 
@@ -46,8 +47,23 @@ function model_3LS()
 
     m_3LS = Chain(
         Dense(28*28, 60, sigmoid), # Input Layer -> Hidden Layer 1
-        Dense(60, 60, sigmoid),     # Hidden Layer 1 -> Hidden Layer 2
-        Dense(60, 10, sigmoid)      # Hidden Layer 2 -> Output Layer
+        Dense(60, 60, sigmoid), # Hidden Layer 1 -> Hidden Layer 2
+        Dense(60, 10, sigmoid), # Hidden Layer 2 -> Output Layer
+        softmax      
     )
     return m_3LS
+end
+
+function model_3LR_SM()
+
+    m_3LR_SM = Chain(
+        Dense(28*28,784,relu),
+        BatchNorm(784),
+        Dense(784,784, relu),
+        BatchNorm(784),
+        Dense(784,10,relu),
+        softmax
+    )
+    return m_3LR_SM
+    
 end

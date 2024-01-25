@@ -27,6 +27,7 @@ using ImageInTerminal
 using ImageIO
 using ImageMagick
 using LinearAlgebra
+using JLD2
 
 # --------- Struct --------- #
 struct NN
@@ -92,7 +93,7 @@ function train(nn::NN, epochs, input_params=nothing)
     Function trains NN model with either custom or "random" parameters
     """
 
-    # Load MNIST data
+    # Load MNIST dataz
     X_train, Y_train, _, _ = load_MNIST()
     data = [(X_train, Y_train)]
 
@@ -110,8 +111,10 @@ function train(nn::NN, epochs, input_params=nothing)
 
     loss_history = []
     # Actual training
+    
     for epoch in 1:epochs
         Flux.train!(loss_of(nn.model), Flux.params(nn.model), data, opt(nn))
+
         push!(loss_history,get_loss(nn))
     
     end
