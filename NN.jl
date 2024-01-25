@@ -113,10 +113,24 @@ function train(nn::NN, epochs, input_params=nothing)
     # Actual training
     
     for epoch in 1:epochs
-        Flux.train!(loss_of(nn.model), Flux.params(nn.model), data, opt(nn))
+        loss_fn = loss_of(nn.model)
+        grad = gradient(Flux.params(nn.model)) do
+            total_loss = 0.0
+            for (X_batch,Y_batch) in data
+                total_loss += loss_fn(X_batch,Y_batch)
+            end
+            total_loss
+        end
+            
+        
+        #Flux.train!(loss_of(nn.model), Flux.params(nn.model), data, opt(nn))
+
+        Flux.update!(opt(nn),Flux.params(nn.model),grad)
+
+        
 
         push!(loss_history,get_loss(nn))
-    
+        
     end
 
 
