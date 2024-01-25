@@ -1,6 +1,6 @@
 """
 
-Authors: Axel Bjarkar Sigurjónsson, Tristan Þórðarson
+Authors: Axel Bjarkar Sigurjónsson and Tristan Þórðarson
 Aknowledgements: 
 
 
@@ -13,15 +13,13 @@ train(myNN, 10, "params.jld2")
 This is the nureal network struct used for the NTK project
 This file initalizes the NN and features all of its functions
 
-Authors: Axel Bjarkar Sigurjónsson and Tristan Þórðarson
+
 """
 
-# --------- Packages --------- #
-# Make sure they are installed
+# ----------- Packages ----------- #
 using Images
 using MLDatasets
 using BSON
-using Random
 using FileIO
 using Flux
 using ImageShow
@@ -29,7 +27,6 @@ using ImageInTerminal
 using ImageIO
 using ImageMagick
 using LinearAlgebra
-using JLD2
 
 # --------- Struct --------- #
 struct NN
