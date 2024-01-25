@@ -31,14 +31,14 @@ EPOCHS = 100
 # ----------  ---------- #
 elapsed_time = @elapsed begin
     myNN = NN(MODEL, OPT, LR)
-    train(myNN,EPOCHS)
-    # loss_history = train(myNN, EPOCHS)
+    # train(myNN,EPOCHS)
+    loss_history = train(myNN, EPOCHS)
 end
 
 # Plot the loss over time
-# plot(1:EPOCHS, loss_history, xlabel="Epochs", ylabel="Loss", label="Training Loss", legend=:topleft)
-# title!("Loss over epoch, [New model]")
-# savefig("loss_new_model.png")
+plot(1:EPOCHS, loss_history, xlabel="Epochs", ylabel="Loss", label="Training Loss", legend=:topleft)
+title!("Loss over epoch, [3LS]")
+savefig("loss_new_model.png")
 
 # # Print results
 println("Elapsed time: $elapsed_time seconds")
