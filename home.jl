@@ -1,5 +1,5 @@
 """
-Author: Axel Bjarkar Sigurjónsson
+Aut
 
 It interacts with models.jl to access various neural network architectures and utilizes 
 the structure defined in NN.jl.

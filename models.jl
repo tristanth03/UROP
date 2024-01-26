@@ -57,10 +57,12 @@ end
 function model_3LR_SM()
 
     m_3LR_SM = Chain(
-        Dense(28*28,784,relu),
+        Dense(28*28,784),
         BatchNorm(784),
-        Dense(784,784, relu),
+        x -> relu.(x),
+        Dense(784,784),
         BatchNorm(784),
+        x->relu.(x),
         Dense(784,10,relu),
         softmax
     )
