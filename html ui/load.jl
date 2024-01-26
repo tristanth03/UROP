@@ -1,11 +1,17 @@
 using BSON
+using JLD2
 using Flux
 using MLDatasets
 using ImageShow
 
 # Just a testing file
 
-BSON.@load "digits.bson" model
+# for BSON 
+# BSON.@load "digits.bson" model
+
+# for JLD2
+metadata = JLD2.load("model_info.jld2", "metadata")
+rebuild = JLD2.load("model_info.jld2", "rebuild")
 
 train_x_raw, train_y_raw = MNIST(split=:train)[:];   # náum í allt trainig data frá MNIST, skipt í x og y
 test_x_raw, test_y_raw = MNIST(split=:test)[:];      # náum í allt test data frá MNIST
