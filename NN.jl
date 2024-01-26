@@ -189,3 +189,17 @@ function accuracy(nn::NN)
     acc = correct_predictions / total_samples
     return acc
 end
+<<<<<<< HEAD
+=======
+
+function kernel(nn::NN)
+    """
+    This function computes the "Kernel" of a given NN
+    """
+    x = load_MNIST()[1] # training data
+    n = size(x)[2] # number of data no_points
+    K = zeros(Int32, n, n)
+    
+    return K
+end
+>>>>>>> 590982673d4ca0bf1fb793f0bbd0f89d2b068c53
