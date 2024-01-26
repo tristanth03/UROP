@@ -1,5 +1,5 @@
 """
-Author: Axel Bjarkar Sigurjónsson
+Aut
 
 It interacts with models.jl to access various neural network architectures and utilizes 
 the structure defined in NN.jl.
@@ -26,7 +26,7 @@ using JLD2
 MODEL  = model_3LR_SM()
 OPT    = "ADAM"        # OPT can be "GD" or "ADAM"... for now ;)
 LR     = 0.001
-EPOCHS = 100
+EPOCHS = 1
 
 # ----------  ---------- #
 elapsed_time = @elapsed begin
@@ -36,9 +36,9 @@ elapsed_time = @elapsed begin
 end
 
 # Plot the loss over time
-plot(1:EPOCHS, loss_history, xlabel="Epochs", ylabel="Loss", label="Training Loss", legend=:topleft)
-title!("Loss over epoch, [3LS]")
-savefig("loss_new_model.png")
+# plot(1:EPOCHS, loss_history, xlabel="Epochs", ylabel="Loss", label="Training Loss", legend=:topleft)
+# title!("Loss over epoch, [3LS]")
+# savefig("loss_new_model.png")
 
 # # Print results
 println("Elapsed time: $elapsed_time seconds")
