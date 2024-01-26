@@ -20,6 +20,7 @@ This file initalizes the NN and features all of its functions
 using Images
 using MLDatasets
 using BSON
+using JLD2
 using FileIO
 using Flux
 using ImageShow
@@ -122,10 +123,18 @@ function train(nn::NN, epochs, input_params=nothing)
     return loss_history
 end
 
-function save_parameters(nn::NN, filename)
+function save_model(nn::NN, filename::String)
     """
-    This function saves the current parameters into a jld2 file
-    It double checks not to override existing files without permission
+    This functions saves the NN in its current state into a JLD2 file.
+
+    To install the NN:
+    metadata = JLD2.load("model_info.jld2", "metadata")
+    rebuild = JLD2.load("model_info.jld2", "rebuild")
+
+    model = rebuild(metadata)
+
+    Beware: The model is not a type::NN, so it does not support the functions of the NN struct
+            It's a standard Flux model, so it can perform all Flux 
     """
 
     # Check if filename is valid
@@ -133,22 +142,22 @@ function save_parameters(nn::NN, filename)
     
     # Check if overriding a file
     if isfile(filename)
-        println("The file $filename already exists. Do you want to override it? (y/n): ")
+        println("\nThe file $filename already exists. Do you want to override it? (y/n): ")
         user_response = lowercase(readline())
         
         if user_response != "y"
-            println("Parameters not saved.")
+            println("Model not saved.")
             return # if we get to this point, the function will terminate
         end
     end
     
     # Actually saving
-    param_dict = Dict("model_params" => Flux.params(nn.model))
-    save(filename, param_dict)
-    println("Parameters saved to $filename")
+    metadata,rebuild = Flux.destructure(nn.model)
+    JLD2.jldsave(filename, metadata=metadata, rebuild=rebuild)
+    println("Model saved to $filename")
 end
 
-function check_ext(filename)
+function check_ext(filename::String)
     """
     This function returns the correct jld2 format for the filename 
     """
@@ -156,14 +165,11 @@ function check_ext(filename)
     # Check if user already put exrension
     # ext: file EXTension
     base, ext = splitext(filename) 
-    if filetype == "jld2"
-        if ext == ".jld2"
-            return filename
-        else
-            return base * ".jld2"
-        end
+    if ext == ".jld2"
+        return filename
+    else
+        return base * ".jld2"
     end
-    # can change to include bson files
 end
 
 function accuracy(nn::NN)

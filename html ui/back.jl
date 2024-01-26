@@ -3,10 +3,12 @@
 
 using Genie, Genie.Router, Genie.Requests
 
-using Flux, MLUtils, BSON
+using Flux, MLUtils, BSON, JLD2
 function recognizeDigit(img)
     # load the model
-    BSON.@load "digits.bson" model
+    metadata = JLD2.load("model_info.jld2", "metadata")
+    rebuild = JLD2.load("model_info.jld2", "rebuild")
+    model = rebuild(metadata)
     # Convert image to grayscale
     img = Gray.(img)
     # Invert each pixel color
@@ -21,6 +23,7 @@ function recognizeDigit(img)
     probs = model(flat_digit_data)
     # return the digit with the largest 
     # probability, converted to a string
+    println("Virkar að hlaða in módeli")
     return "$(argmax(probs)[1]-1)"
 end
 
