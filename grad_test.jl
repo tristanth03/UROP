@@ -17,13 +17,14 @@ kernel_matrix = zeros(Float32, n, m)
 jacobians = []
 for i in 1:n
     x_i = X_batch[:, i]
+    @show x_i
     push!(jacobians, jacobian(Flux.params(model)) do
         y = model(x_i)
         return y  # Remove the sum(y) to keep the vector y
     end)
 end
 
-@show size(jacobians)
+@show jacobians
 
 for i in 1:n
     grads_xi_all = jacobians[i]
