@@ -7,7 +7,7 @@ using Flux, Zygote
 using LinearAlgebra
 
 X_training, Y_training, X_testing, Y_testing = load_MNIST()
-model = model_3LS()  # Simple model to play with
+model = model_5LS2048()  # Simple model to play with
 
 X_batch = X_training[:, 1:10]  # First 100 vectors
 n = size(X_batch, 2)
