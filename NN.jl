@@ -189,8 +189,6 @@ function accuracy(nn::NN)
     acc = correct_predictions / total_samples
     return acc
 end
-<<<<<<< HEAD
-=======
 
 function kernel(nn::NN)
     """
@@ -202,4 +200,4 @@ function kernel(nn::NN)
     
     return K
 end
->>>>>>> 590982673d4ca0bf1fb793f0bbd0f89d2b068c53
+
