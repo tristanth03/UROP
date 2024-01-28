@@ -40,5 +40,3 @@ save_model(myNN,"filename")
 """
 
 println('\n')
-
-
