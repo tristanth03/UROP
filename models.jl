@@ -1,4 +1,7 @@
 """
+Authors: Tristan Þórðarson, Axel Bjarkar Sigurjónsson
+Aknowledgements: 
+
 This file includes models that the NN.jl struct takes in as a "model" parameter
 """
 
@@ -6,7 +9,6 @@ This file includes models that the NN.jl struct takes in as a "model" parameter
 using Images
 using MLDatasets
 using BSON
-using Random
 using FileIO
 using Flux
 using ImageShow
@@ -15,6 +17,7 @@ using ImageIO
 using ImageMagick
 using LinearAlgebra
 using JLD2
+
 # Make sure you have the packages installed.
 
 # ----------- Models ----------- #
@@ -33,9 +36,7 @@ function model_5LS2048()
         Dense(2048,10,sigmoid) # Hidden Layer 4 -> Output Layer
         )
 
-    param_5LS2048 = Flux.params(m_5LS2048) # The parameters
-
-    return m_5LS2048,param_5LS2048
+    return m_5LS2048
 end
 
 function model_3LS()
@@ -46,9 +47,26 @@ function model_3LS()
 
     m_3LS = Chain(
         Dense(28*28, 60, sigmoid), # Input Layer -> Hidden Layer 1
-        Dense(60, 60, sigmoid),     # Hidden Layer 1 -> Hidden Layer 2
-        Dense(60, 10, sigmoid)      # Hidden Layer 2 -> Output Layer
+        Dense(60, 60, sigmoid), # Hidden Layer 1 -> Hidden Layer 2
+        Dense(60, 10, sigmoid), # Hidden Layer 2 -> Output Layer
+        softmax      
     )
-
     return m_3LS
 end
+
+function model_3LR_SM()
+
+    m_3LR_SM = Chain(
+        Dense(28*28,784),
+        BatchNorm(784),
+        x -> relu.(x),
+        Dense(784,784),
+        BatchNorm(784),
+        x->relu.(x),
+        Dense(784,10,relu),
+        softmax
+    )
+    return m_3LR_SM
+    
+end
+

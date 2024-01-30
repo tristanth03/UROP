@@ -28,7 +28,7 @@ using ImageInTerminal
 using ImageIO
 using ImageMagick
 using LinearAlgebra
-using Zygote
+
 # --------- Struct --------- #
 struct NN
     model::Any
@@ -190,35 +190,18 @@ function accuracy(nn::NN)
     return acc
 end
 
-function kernel(nn::NN, n=60000)
+function kernel(nn::NN)
     """
     This function computes the "Kernel" of a given NN
-    Uses jacobian instead of gradient, because gradient outputs only scalars.
     """
-    x = load_MNIST()[1]     # training data
-    n = size(x)[2]          # number of data no_points
-    K = zeros(Int32, n, n)  # Initialize empty Kernel
+    x = load_MNIST()[1] # training data
+    n = size(x)[2] # number of data no_points
+    K = zeros(Int32, n, n)
+
     
-    gradients = [] # will have n unique gradients
-    model = nn.model
-
-    for i in 1:n
-        xi = X_batch[:, i] # singular picture vector
-        push!(gradients, jacobian(Flux.params(model)) do
-            y = model(xi)
-            return y
-        end)
-    end
-
-    for i in 1:n
-        A = gradients[i]
-        
-        for j in 1:n
-            B = gradients[j]
-            K[i,j] = dot(A,B)
-        end
-    end
-
     return K
 end
+
+
+
 

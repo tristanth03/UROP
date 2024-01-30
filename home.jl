@@ -1,28 +1,42 @@
 """
-Author: Axel Bjarkar Sigurjónsson
+Aut
 
-home.jl serves as the core module for initializing and training neural network models. 
 It interacts with models.jl to access various neural network architectures and utilizes 
-the structure defined in NN.jl for effective model configuration. 
-    
-This file acts as a centralized hub, streamlining the process of setting up and training 
-artificial neural networks while maintaining modularity and extensibility.
+the structure defined in NN.jl.
 """
 
+# home.jl
 include("NN.jl")
 include("models.jl")
 
 # ---------- CONSTANTS ---------- #
 MODEL  = model_3LS()
-OPT    = "GD"        # OPT can be "GD" or "ADAM"... for now ;)
-LR     = 0.1
-EPOCHS = 10
+OPT    = "ADAM"        # OPT can be "GD" or "ADAM"... for now ;)
+LR     = 0.001
+EPOCHS = 1
 
-# ---------- oooOOOooo ---------- #
+# ----------  ---------- #
 elapsed_time = @elapsed begin
+    myNN = NN(MODEL, OPT, LR)
+    #train(myNN,EPOCHS)
+    loss_history = train(myNN, EPOCHS)
+end
 
-    myNN = NN(MODEL,LR)
-    train(myNN,EPOCHS)
-
-end # stopwatch stops
+# Print results
 println("Elapsed time: $elapsed_time seconds")
+println("Final Loss: ", loss_history[end])
+println("Accuracy: ", accuracy(myNN))
+
+# Plot the loss over time
+"""
+plot(1:EPOCHS, loss_history, xlabel="Epochs", ylabel="Loss", label="Training Loss", legend=:topleft)
+title!("Loss over epoch, [3LS]")
+savefig("loss_new_model.png")
+"""
+
+# To save the model into a JLD2 file
+"""
+save_model(myNN,"filename")
+"""
+
+println('\n')
