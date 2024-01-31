@@ -78,7 +78,7 @@ elapsed_time = @elapsed begin
     X_training, Y_training, X_testing, Y_testing = load_MNIST()
 
     # Inputs
-    lr = 0.01                     # learning rate
+    lr = 0.0001                     # learning rate
     opt = Adam(lr)            # optimizer
     m_5LS2048, params_5LS2048 = model_5LS2048()
     loss_5LS2048 = loss_of(m_5LS2048)
