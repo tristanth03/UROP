@@ -27,7 +27,6 @@ gs_x2=Flux.gradient(() -> model(x2)[1],Flux.params(model))   # Reikna allar hlut
 grads_x1 = []
 grads_x2 = []
 
-<<<<<<< HEAD
 for i = 1:length(Flux.params(model))
     push!(grads_x1, gs_x1[Flux.params(model)[i]])
     push!(grads_x2, gs_x2[Flux.params(model)[i]])
@@ -39,24 +38,5 @@ K1_2 = dot(grads_x1, grads_x2)
 K2_1 = dot(grads_x2, grads_x1)
 K2_2 = dot(grads_x2, grads_x2)
 
-K_grad = [K1_1 K1_2 ; K2_1 K2_2]
-=======
-gs=Flux.gradient(() -> model(x)[1],Flux.params(model))   # Reikna allar hlutaafleiður
+K = [K1_1 K1_2 ; K2_1 K2_2]
 
-# Filter out the undesired entry associated with :(Main.x)
-filter!(x -> first(x) != :(Main.x), gs.grads)
-
-# Collect the remaining gradient values
-all_values = values(gs.grads)
-
-grads_nums = []
-
-for matrix in all_values
-    push!(grads_nums, matrix...)
-end
-
-K1_1 = dot(grads_nums, grads_nums)
-
-println(K1_1)
-
->>>>>>> fca95ff8f0ce9ecf2378521cb0d96994faa0b45a
