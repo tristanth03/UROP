@@ -40,3 +40,8 @@ save_model(myNN,"filename")
 """
 
 println('\n')
+
+# Calculate kernel
+elapsed_time = @elapsed begin
+    K = kernel(myNN,10000)
+end

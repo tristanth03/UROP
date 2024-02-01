@@ -193,29 +193,33 @@ end
 function kernel(nn::NN, n=60000)
     """
     This function computes the "Kernel" of a given NN
-    Uses jacobian instead of gradient, because gradient outputs only scalars.
     """
     x = load_MNIST()[1]     # training data
-    n = size(x)[2]          # number of data no_points
-    K = zeros(Int32, n, n)  # Initialize empty Kernel
-    
-    gradients = [] # will have n unique gradients
+    K = zeros(n, n)         # Initialize empty Kernel
     model = nn.model
+    
 
-    for i in 1:n
-        xi = X_batch[:, i] # singular picture vector
-        push!(gradients, jacobian(Flux.params(model)) do
-            y = model(xi)
-            return y
-        end)
+    # Calculate all gradients
+    gs_raw = []
+    for i = 1:n
+        xi =  x[:,i] # current datapoint
+        push!(gs_raw, Flux.gradient(() -> model(xi)[1],Flux.params(model)))
     end
 
-    for i in 1:n
-        A = gradients[i]
-        
-        for j in 1:n
-            B = gradients[j]
-            K[i,j] = dot(A,B)
+    # Collect numerical values
+    gs = []
+    for i = 1:n
+        gs_i = []
+        for j = 1:length(Flux.params(model))
+            push!(gs_i, gs_raw[i][Flux.params(model)[j]])
+        end
+        push!(gs, gs_i)
+    end
+
+    # Evaluate each K[i,j]
+    for i = 1:n
+        for j = 1:n
+            K[i,j] = dot(gs[i], gs[j])
         end
     end
 

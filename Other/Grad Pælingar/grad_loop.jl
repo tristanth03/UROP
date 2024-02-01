@@ -39,3 +39,32 @@ K2_1 = dot(grads_x2, grads_x1)
 K2_2 = dot(grads_x2, grads_x2)
 
 K_grad = [K1_1 K1_2 ; K2_1 K2_2]
+
+gs_raw = []
+x = [x1, x2]
+n = length(x)
+
+
+# Calculate all gradients
+for i = 1:n
+    xi =  x[i] # current datapoint
+    push!(gs_raw, Flux.gradient(() -> model(xi)[1],Flux.params(model)))
+end
+
+gs = []
+
+for i = 1:n
+    gs_i = []
+    for j = 1:length(Flux.params(model))
+        push!(gs_i, gs_raw[i][Flux.params(model)[j]])
+    end
+    push!(gs, gs_i)
+end
+
+K_new = zeros(n,n)
+
+for i = 1:n
+    for j = 1:n
+        K_new[i,j] = dot(gs[i], gs[j])
+    end
+end
