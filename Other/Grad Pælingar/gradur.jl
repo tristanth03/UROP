@@ -23,15 +23,20 @@ y=model(x)
 
 
 gs=Flux.gradient(() -> model(x)[1],Flux.params(model))   # Reikna allar hlutaafleiður
+
+# Filter out the undesired entry associated with :(Main.x)
+filter!(x -> first(x) != :(Main.x), gs.grads)
+
+# Collect the remaining gradient values
 all_values = values(gs.grads)
 
 grads_nums = []
 
-# Iterate through each matrix and concatenate its elements
 for matrix in all_values
     push!(grads_nums, matrix...)
-    # vantar að taka út main!!!!
 end
 
-
 K1_1 = dot(grads_nums, grads_nums)
+
+println(K1_1)
+
