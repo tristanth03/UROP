@@ -13,7 +13,7 @@ include("models.jl")
 MODEL  = model_3LS()
 OPT    = "ADAM"        # OPT can be "GD" or "ADAM"... for now ;)
 LR     = 0.001
-EPOCHS = 1
+EPOCHS = 100
 
 # ----------  ---------- #
 elapsed_time = @elapsed begin
@@ -43,5 +43,5 @@ println('\n')
 
 # Calculate kernel
 elapsed_time = @elapsed begin
-    K = kernel(myNN,10000)
+    K = kernel(myNN,4000)
 end
