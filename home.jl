@@ -39,9 +39,11 @@ savefig("loss_new_model.png")
 save_model(myNN,"filename")
 """
 
-println('\n')
+
 
 # Calculate kernel
-elapsed_time = @elapsed begin
+elapsed_time_K = @elapsed begin
     K = kernel(myNN,4000)
 end
+
+println("Kernel time: $elapsed_time_K")
