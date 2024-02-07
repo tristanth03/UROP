@@ -22,15 +22,16 @@ b1 .= [0;1]
 W2 .= [1 0]
 b2 .= 0
 
-# Handvirkt reiknaðar hlutaafleiður
-gs_x1=Flux.gradient(() -> model(x1)[1],Flux.params(model))   # Reikna allar hlutaafleiður fyrir x1
-gs_x2=Flux.gradient(() -> model(x2)[1],Flux.params(model))   # Reikna allar hlutaafleiður fyrir x2
+# reikna gradient fyrir gefið x
+gs = x -> Flux.gradient(() -> model(x)[1],Flux.params(model)) # anonymous function
 
 grads_x1 = []
 grads_x2 = []
+
+# Ná í grads gildi
 for i = 1:length(Flux.params(model))
-    push!(grads_x1, gs_x1[Flux.params(model)[i]][:])
-    push!(grads_x2, gs_x2[Flux.params(model)[i]][:])
+    push!(grads_x1, gs(x1)[Flux.params(model)[i]][:])
+    push!(grads_x2, gs(x2)[Flux.params(model)[i]][:])
 end
 
 # fletja
