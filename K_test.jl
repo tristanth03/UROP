@@ -18,8 +18,8 @@ for i = 1:length(Flux.params(model))
 end
 
 # fletja
-grads_x1 = reduce(vcat, grads_x1)
-grads_x2 = reduce(vcat, grads_x2)
+grads_x1 = collect(Iterators.flatten(grads_x1))
+grads_x2 = collect(Iterators.flatten(grads_x2))
 
 K1_1 = dot(grads_x1, grads_x1)
 K1_2 = dot(grads_x1, grads_x2)
@@ -29,4 +29,13 @@ K2_2 = dot(grads_x2, grads_x2)
 
 oldK = [K1_1 K1_2 ; K2_1 K2_2];
 
-newK = kernel(model,2)
+
+elapsed_time = @elapsed begin
+    newK = kernel(model,1000)
+    if length(findall(x -> x<0, eigen(newK).values)) == 0
+        println("The matrix is positive definite.")
+    end
+end
+
+# Print results
+println("\nElapsed time: $elapsed_time seconds")

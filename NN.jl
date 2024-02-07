@@ -29,6 +29,7 @@ using ImageIO
 using ImageMagick
 using LinearAlgebra
 using Zygote
+using IterTools
 # --------- Struct --------- #
 struct NN
     model::Any
@@ -203,23 +204,22 @@ function kernel(model, n=60000)
 
     # reikna gradient fyrir gefið x
     gs = xi-> Flux.gradient(() -> model(xi)[1],Flux.params(model)) # anonymous function
-    
     all_grads = []
     
     # Collect numerical values
     for i in 1:n
         current_grad = []
         for j in 1:length(Flux.params(model))
-            push!(current_grad, gs(x[:,i])[Flux.params(model)[j]][:]) # [:] til að fletja
+            push!(current_grad, gs(x[:,i])[Flux.params(model)[j]]) # [:] til að fletja
         end
-        current_grad = reduce(vcat, current_grad) # fletja
+        current_grad = collect(Iterators.flatten(current_grad)) # flatten
         push!(all_grads, current_grad)
     end
 
     # Evaluate each K[i,j]
     for i = 1:n
         for j = 1:n
-            K[i,j] = dot(all_grads[i], all_grads[j])
+            K[i,j] = all_grads[i]'*all_grads[j]
         end
     end
 
