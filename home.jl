@@ -43,5 +43,5 @@ println('\n')
 
 # Calculate kernel
 elapsed_time = @elapsed begin
-    K = kernel(myNN,10000)
+    K = kernel(myNN,1000)
 end
