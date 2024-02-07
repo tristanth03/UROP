@@ -219,7 +219,7 @@ function kernel(model, n=60000)
     # Evaluate each K[i,j]
     for i = 1:n
         for j = 1:n
-            K[i,j] = all_grads[i]'*all_grads[j]
+            K[i,j] = all_grads[i]'*all_grads[j] # ' means transposed
         end
     end
 

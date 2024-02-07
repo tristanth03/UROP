@@ -31,7 +31,7 @@ oldK = [K1_1 K1_2 ; K2_1 K2_2];
 
 
 elapsed_time = @elapsed begin
-    newK = kernel(model,1000)
+    newK = kernel(model,)
     if length(findall(x -> x<0, eigen(newK).values)) == 0
         println("The matrix is positive definite.")
     end
