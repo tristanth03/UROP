@@ -190,39 +190,41 @@ function accuracy(nn::NN)
     return acc
 end
 
-function kernel(nn::NN, n=60000)
+function kernel(model, n=60000)
     """
     This function computes the "Kernel" of a given NN
     """
     x = load_MNIST()[1]     # training data
     K = zeros(n, n)         # Initialize empty Kernel
-    model = nn.model
     
-
-    # Calculate all gradients
-    gs_raw = []
-    for i = 1:n
-        xi =  x[:,i] # current datapoint
-        push!(gs_raw, Flux.gradient(() -> model(xi)[1],Flux.params(model)))
+    if typeof(model) == NN     # Svo að hægt sé að henda inn módeli sem er ekki af NN structi gerð
+        model  = model.model
     end
 
+    # reikna gradient fyrir gefið x
+    gs = xi-> Flux.gradient(() -> model(xi)[1],Flux.params(model)) # anonymous function
+    
+    all_grads = []
+    
     # Collect numerical values
-    gs = []
-    for i = 1:n
-        gs_i = []
-        for j = 1:length(Flux.params(model))
-            push!(gs_i, gs_raw[i][Flux.params(model)[j]])
+    for i in 1:n
+        current_grad = []
+        for j in 1:length(Flux.params(model))
+            push!(current_grad, gs(x[:,i])[Flux.params(model)[j]][:]) # [:] til að fletja
         end
-        push!(gs, gs_i)
+        current_grad = reduce(vcat, current_grad) # fletja
+        push!(all_grads, current_grad)
     end
 
     # Evaluate each K[i,j]
     for i = 1:n
         for j = 1:n
-            K[i,j] = dot(gs[i], gs[j])
+            K[i,j] = dot(all_grads[i], all_grads[j])
         end
     end
 
     return K
 end
+
+
 
