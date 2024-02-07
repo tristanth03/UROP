@@ -1,4 +1,4 @@
-# Þetta forrit er til að staðfesta K sem var reiknað á blaði, sjá PDF í þessu folderi
+# Þetta forrit er til að staðfesta K sem var reiknað á blaði
 using Flux
 using Zygote
 using MLDatasets
