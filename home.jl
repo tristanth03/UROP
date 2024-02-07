@@ -13,7 +13,7 @@ include("models.jl")
 MODEL  = model_3LS()
 OPT    = "ADAM"        # OPT can be "GD" or "ADAM"... for now ;)
 LR     = 0.001
-EPOCHS = 1
+EPOCHS = 100
 
 # ----------  ---------- #
 elapsed_time = @elapsed begin
@@ -39,9 +39,11 @@ savefig("loss_new_model.png")
 save_model(myNN,"filename")
 """
 
-println('\n')
+
 
 # Calculate kernel
-elapsed_time = @elapsed begin
-    K = kernel(myNN,1000)
+elapsed_time_K = @elapsed begin
+    K = kernel(myNN,4000)
 end
+
+println("Kernel time: $elapsed_time_K")
