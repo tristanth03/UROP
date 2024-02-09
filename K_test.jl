@@ -1,6 +1,6 @@
 include("NN.jl")
 
-model = Chain(  Dense(784 => 2), Dense(2 => 1)) # W_2[1x2](W_1[2x1]x[1]+b_1[2x1])+b_2[1]
+model = Chain(  Dense(784 => 60,relu),Dense(60 => 60,relu), Dense(60 => 10,relu), softmax) # W_2[1x2](W_1[2x1]x[1]+b_1[2x1])+b_2[1]
 
 x1 = load_MNIST()[1][:,1]
 x2 = load_MNIST()[1][:,2]
@@ -31,7 +31,7 @@ oldK = [K1_1 K1_2 ; K2_1 K2_2];
 
 
 elapsed_time = @elapsed begin
-    newK = kernel(model,)
+    newK = kernel(model,1000)
     if length(findall(x -> x<0, eigen(newK).values)) == 0
         println("The matrix is positive definite.")
     end
