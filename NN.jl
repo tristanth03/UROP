@@ -227,4 +227,3 @@ function kernel(model, n=60000)
 end
 
 
-
