@@ -191,7 +191,7 @@ function accuracy(nn::NN)
     return acc
 end
 
-function kernel(model, n=60000)
+function Kernel(model, n=60000)
     """
     This function computes the "Kernel" of a given NN
     """
