@@ -1,6 +1,48 @@
 # AUTHOR: Axel Bjarkar Sigurjónsson
 using Flux, LinearAlgebra, IterTools
 
+function check_dim(x)
+    """This function checks the appropriate  dimensions of input data"""
+    if isa(x, Matrix)
+        return size(x, 2)  # Returns the number of columns (width) of the matrix
+    elseif isa(x, Vector)
+        return 1  # Return 1 if it's a column vectoOkr
+    else
+        type = typeof(x)
+        error("Input data type: $type is neither a matrix or column vector")
+    end
+end
+
+function map_model(model, X)
+    """This function evaluates model with repsect to appropriate dimensions"""
+    N = check_dim(X)
+    m = length(model(X[:,1]))  # Number of functions in the model output
+    
+    Ŷ = []
+
+    if N == 1
+        # If X is one datapoint
+        if m == 1
+            push!(Ŷ, model((X[:, 1]))[1])  # model outputs a 1-element array
+        else
+            push!(Ŷ, model((X[:, 1]))[:])  # model outputs a m-element array
+        end
+    else
+        # If X is multiple datapoints
+        if m == 1
+            for i in 1:N
+                push!(Ŷ, model(X[:, i])[1])  # model outputs a 1-element array
+            end 
+        else
+            for i in 1:N
+                push!(Ŷ, model(X[:, i])[:])  # model outputs a m-element array
+            end 
+        end
+    end
+
+    return Ŷ
+end
+
 function Df(model, x)
     # x: single datapoint
     m = length(model(x))
@@ -25,18 +67,6 @@ function Df(model, x)
     end
 
     return Jacob # Þetta er Df fylkið í bilblíunni
-end
-
-function check_dim(x)
-    """This function checks the appropriate  dimensions of input data"""
-    if isa(x, Matrix)
-        return size(x, 2)  # Returns the number of columns (width) of the matrix
-    elseif isa(x, Vector)
-        return 1  # Return 1 if it's a column vectoOkr
-    else
-        type = typeof(x)
-        error("Input data type: $type is neither a matrix or column vector")
-    end
 end
 
 function kernel(model, x)
