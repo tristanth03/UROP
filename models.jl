@@ -9,6 +9,7 @@ This file includes models that the NN.jl struct takes in as a "model" parameter
 using Images
 using MLDatasets
 using BSON
+using Plots
 using FileIO
 using Flux
 using ImageShow
