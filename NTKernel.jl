@@ -32,7 +32,7 @@ function check_dim(x)
     if isa(x, Matrix)
         return size(x, 2)  # Returns the number of columns (width) of the matrix
     elseif isa(x, Vector)
-        return 1  # Return 1 if it's a column vector
+        return 1  # Return 1 if it's a column vectoOkr
     else
         type = typeof(x)
         error("Input data type: $type is neither a matrix or column vector")
