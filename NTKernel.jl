@@ -40,7 +40,7 @@ function map_model(model, X)
         end
     end
 
-    return Ŷ
+    return Float64.(Ŷ)
 end
 
 function Df(model, x)
