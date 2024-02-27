@@ -44,21 +44,34 @@ function count_nodes(model)
     return node_count
 end
 
-# function norm_params(model)
+function norm_params(model)
+    for i = 1:length(Flux.params(model))
+        myParam = Flux.params(model)[i]
+        
+        if isa(myParam, Vector)
+            myParam .= 1/sqrt(length(myParam)) * myParam
+        elseif isa(myParam, Matrix)
+            rows = size(myParam)[1]
+            myParam .= 1/sqrt(rows) *myParam
+        end
+    end
+end
 
-#     params = Flux.params(model)
+model = Chain(Dense(5,10),Dense(10,2))
 
-#     count = 1
-#     inInputLayer  = true
+using Random
+P(i) = Flux.params(model)[i]
 
-#     for i = 1:length(params)
-#         if inInputLayer
+display(P(1))
+display(P(2))
+display(P(3))
+display(P(4))
 
-#         if i == length(parmas)
-#         end
-#     end
-# end
-
+norm_params(model)
+display(P(1))
+display(P(2))
+display(P(3))
+display(P(4))
 
 
 function map_model(model, X)
