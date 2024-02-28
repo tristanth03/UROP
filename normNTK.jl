@@ -25,14 +25,19 @@ function norm_data(x)
 end
 
 function node_count(model)
+    """Function checks how many nodes are in each layer
+       Including  the input, ouput and hidden layers"""
     param(x)  = Flux.params(model)[x]
     n = []
     for i = 1:length(Flux.params(model))
-        if i%2 != 0
+        if i%2 != 0 # Check all weights in θ 
             ni = size(param(i))[2]
             push!(n,ni)                 
         end                             
     end
+
+    """We also have to check the output layer specifically.  
+       This is because there is not weight in θ associated with the output layer"""
     push!(n, length(param(length(Flux.params(model)))))
     return n
 end
