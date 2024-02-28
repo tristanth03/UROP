@@ -44,12 +44,25 @@ function count_nodes(model)
     return node_count
 end
 
+function node_count(model)
+    param(x)  = Flux.params(model)[x]
+    n = []
+    for i = 1:length(Flux.params(model))
+        if i%2 == 0
+            ni = length(param(i)) 
+            push!(n,ni)                 
+        end                             
+    end
+    return n
+end
+
 function norm_params(model)
     param(x)  = Flux.params(model)[x]
 
     for i = 1:length(Flux.params(model))
         if i%2 != 0 # For weights
-            ni = size(param(i))[2]
+            ni = size(param(i))[2]      # julia switches the sizes of weight
+                                        # nt+1 x nt instead of conventional nt x nt+1
         else
             ni = length(param(i))
         end
