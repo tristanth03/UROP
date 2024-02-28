@@ -14,6 +14,24 @@ function check_dim(x)
     end
 end
 
+function node_count(model)
+    """Function checks how many nodes are in each layer
+       Including  the input, ouput and hidden layers"""
+    param(x)  = Flux.params(model)[x]
+    n = []
+    for i = 1:length(Flux.params(model))
+        if i%2 != 0 # Check all weights in θ 
+            ni = size(param(i))[2]
+            push!(n,ni)                 
+        end                             
+    end
+
+    """We also have to check the output layer specifically.  
+       This is because there is not weight in θ associated with the output layer"""
+    push!(n, length(param(length(Flux.params(model)))))
+    return n
+end
+
 """ATH að norm(data) er bara skilgreint fyrir 1-staka inntak eins og er..."""
 function norm_data(x)
     """This function normalizes data from 1 to -1"""
@@ -24,54 +42,21 @@ function norm_data(x)
     return normalized_data
 end
 
-function count_nodes(model)
-    node_count = []
-    inInputLayer = true
-
-    for i = 1:length(Flux.params(model))
-        if inInputLayer
-            push!(node_count, size(Flux.params(model)[i],2))
-            inInputLayer = false
-        elseif  i == length(Flux.params(model))
-            push!(node_count, length(Flux.params(model)[i]))
-        else
-            if i%2 == 0
-                push!(node_count, length(Flux.params(model)[i]))
-            end
-        end
-    end
-    
-    return node_count
-end
-
 function norm_params(model)
-    for i = 1:length(Flux.params(model))
-        myParam = Flux.params(model)[i]
-        
-        if isa(myParam, Vector)
-            myParam .= 1/sqrt(length(myParam)) * myParam
-        elseif isa(myParam, Matrix)
-            rows = size(myParam)[1]
-            myParam .= 1/sqrt(rows) *myParam
-        end
+    """Normalizes the parameters in θ"""
+    θ(x)  = Flux.params(model)[x]
+    nNodes = node_count(model)
+
+    i = 1
+    for n = 1:length(nNodes)-1
+        ni = nNodes[n]
+
+        θ(i) .= θ(i) * 1/sqrt(ni)
+        i += 1
+        θ(i) .= θ(i) * 1/sqrt(ni)
+        i += 1
     end
 end
-
-model = Chain(Dense(5,10),Dense(10,2))
-
-using Random
-P(i) = Flux.params(model)[i]
-
-display(P(1))
-display(P(2))
-display(P(3))
-display(P(4))
-
-norm_params(model)
-display(P(1))
-display(P(2))
-display(P(3))
-display(P(4))
 
 
 function map_model(model, X)
