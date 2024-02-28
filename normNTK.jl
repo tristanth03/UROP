@@ -14,16 +14,6 @@ function check_dim(x)
     end
 end
 
-"""ATH að norm(data) er bara skilgreint fyrir 1-staka inntak eins og er..."""
-function norm_data(x)
-    """This function normalizes data from 1 to -1"""
-    min_val = minimum(x)
-    max_val = maximum(x)
-    normalized_data = (2 * (x.-min_val) /(max_val - min_val)) .- 1
-    
-    return normalized_data
-end
-
 function node_count(model)
     """Function checks how many nodes are in each layer
        Including  the input, ouput and hidden layers"""
@@ -42,35 +32,31 @@ function node_count(model)
     return n
 end
 
-function norm_params(model)
-    param(x)  = Flux.params(model)[x]
-
-    for i = 1:length(Flux.params(model))
-        if i%2 != 0 # For weights
-            ni = size(param(i))[2]      # julia switches the sizes of weight
-                                        # nt+1 x nt instead of conventional nt x nt+1
-        else
-            ni = length(param(i))
-        end
-        param(i) .= 1/sqrt(ni) * param(i)
-    end
+"""ATH að norm(data) er bara skilgreint fyrir 1-staka inntak eins og er..."""
+function norm_data(x)
+    """This function normalizes data from 1 to -1"""
+    min_val = minimum(x)
+    max_val = maximum(x)
+    normalized_data = (2 * (x.-min_val) /(max_val - min_val)) .- 1
+    
+    return normalized_data
 end
 
-model = Chain(Dense(1,3),Dense(3,1),Dense(1,3),Dense(3,1),Dense(1,3),Dense(3,1),Dense(1,3),Dense(3,1),Dense(1,3),Dense(3,1))
+function norm_params(model)
+    """Normalizes the parameters in θ"""
+    θ(x)  = Flux.params(model)[x]
+    nNodes = node_count(model)
 
-using Random
-P(i) = Flux.params(model)[i]
+    i = 1
+    for n = 1:length(nNodes)-1
+        ni = nNodes[n]
 
-display(P(1))
-display(P(2))
-display(P(3))
-display(P(4))
-
-norm_params(model)
-display(P(1))
-display(P(2))
-display(P(3))
-display(P(4))
+        θ(i) .= θ(i) * 1/sqrt(ni)
+        i += 1
+        θ(i) .= θ(i) * 1/sqrt(ni)
+        i += 1
+    end
+end
 
 
 function map_model(model, X)
