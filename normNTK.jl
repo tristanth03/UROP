@@ -45,19 +45,19 @@ function count_nodes(model)
 end
 
 function norm_params(model)
+    param(x)  = Flux.params(model)[x]
+
     for i = 1:length(Flux.params(model))
-        myParam = Flux.params(model)[i]
-        
-        if isa(myParam, Vector)
-            myParam .= 1/sqrt(length(myParam)) * myParam
-        elseif isa(myParam, Matrix)
-            rows = size(myParam)[1]
-            myParam .= 1/sqrt(rows) *myParam
+        if i%2 != 0 # For weights
+            ni = size(param(i))[2]
+        else
+            ni = length(param(i))
         end
+        param(i) .= 1/sqrt(ni) * param(i)
     end
 end
 
-model = Chain(Dense(5,10),Dense(10,2))
+model = Chain(Dense(1,3),Dense(3,1))
 
 using Random
 P(i) = Flux.params(model)[i]
