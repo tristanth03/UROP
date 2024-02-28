@@ -24,35 +24,16 @@ function norm_data(x)
     return normalized_data
 end
 
-function count_nodes(model)
-    node_count = []
-    inInputLayer = true
-
-    for i = 1:length(Flux.params(model))
-        if inInputLayer
-            push!(node_count, size(Flux.params(model)[i],2))
-            inInputLayer = false
-        elseif  i == length(Flux.params(model))
-            push!(node_count, length(Flux.params(model)[i]))
-        else
-            if i%2 == 0
-                push!(node_count, length(Flux.params(model)[i]))
-            end
-        end
-    end
-    
-    return node_count
-end
-
 function node_count(model)
     param(x)  = Flux.params(model)[x]
     n = []
     for i = 1:length(Flux.params(model))
-        if i%2 == 0
-            ni = length(param(i)) 
+        if i%2 != 0
+            ni = size(param(i))[2]
             push!(n,ni)                 
         end                             
     end
+    push!(n, length(param(length(Flux.params(model)))))
     return n
 end
 
@@ -70,7 +51,7 @@ function norm_params(model)
     end
 end
 
-model = Chain(Dense(1,3),Dense(3,1))
+model = Chain(Dense(1,3),Dense(3,1),Dense(1,3),Dense(3,1),Dense(1,3),Dense(3,1),Dense(1,3),Dense(3,1),Dense(1,3),Dense(3,1))
 
 using Random
 P(i) = Flux.params(model)[i]
