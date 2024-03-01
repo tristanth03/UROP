@@ -102,7 +102,7 @@ function Df(model, x)
 
     for func_i = 1:m
         current_col = []
-        for param_i = 1:length(Flux.params(model))-1
+        for param_i = 1:length(Flux.params(model))
             push!(current_col, jac(func_i)[Flux.params(model)[param_i]]) # Fyrir hvern parametra W1, B1, W2...
         end
         current_col = collect(Iterators.flatten(current_col)) # Flatten, flet allt
