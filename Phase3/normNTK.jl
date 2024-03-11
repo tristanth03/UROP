@@ -124,6 +124,10 @@ function kernel(model, x)
     m = length(model(x[:,1]))  # Number of functions in the model output
     K = zeros(N*m, N*m)
     
+    if N == 1
+        K = Df(model,x)'*Df(model,x)
+    end
+
     for i = 1:N
         for j = 1:N
             block = Df(model, x[:,i])' * Df(model, x[:,j])
