@@ -1,5 +1,5 @@
 # AUTHOR: Axel Bjarkar Sigurjónsson
-# This is a modified 
+# This is a modified of original NTK file
 using Flux, LinearAlgebra, IterTools
 
 function check_dim(x)
@@ -42,8 +42,8 @@ function norm_data(x)
     return normalized_data
 end
 
-function norm_params(model)
-    """Normalizes the parameters in θ"""
+function norm_weights(model)
+    """Normalizes the weights in θ"""
     θ(x)  = Flux.params(model)[x]
     nNodes = node_count(model)
 
@@ -52,9 +52,7 @@ function norm_params(model)
         ni = nNodes[n]
 
         θ(i) .= θ(i) * 1/sqrt(ni)
-        i += 1
-        θ(i) .= θ(i) * 1/sqrt(ni)
-        i += 1
+        i += 2
     end
 end
 
@@ -86,40 +84,38 @@ function map_model(model, X)
         end
     end
 
+    
     return Float64.(Ŷ)
+end
+
+function jac(model, x, f,param)
+    """Gets the jacobian of a specific parameter"""
+    jaco(f) = Flux.jacobian(() -> model(x)[f],Flux.params(model))
+    return jaco(f)[Flux.params(model)[param]]
 end
 
 function Df(model, x)
     # x: single datapoint
     m = length(model(x))
-    k = sum(length, Flux.params(model)) # Total amount of params
 
-    # Þetta anonymous function reiknar gradient fyrir hvert function í outputinu frá 1:m
-    jac = (fi) -> Flux.jacobian(() -> model(x)[fi],Flux.params(model)) # anonymous function
+    # Total amount of θ exluding final bias
+    total_amount_of_θ = sum(length, Flux.params(model))  - length(Flux.params(model)[length(Flux.params(model))])
 
-    # Skilgreini tómt Jacobian fylki
-    Jacob = zeros(k,m)
+    # Skilgreini empty jacobian matrix
+    Jacob = zeros(total_amount_of_θ,m)
 
     for func_i = 1:m
-        current_col = []
-        for param_i = 1:length(Flux.params(model))-1
-            push!(current_col, jac(func_i)[Flux.params(model)[param_i]]) # Fyrir hvern parametra W1, B1, W2...
+        current_col = Vector{Float64}(undef, 0) # Preallocate memory
+        for param_i = 1:length(Flux.params(model)) - 1 # -1 because we don't want to include the final bias
+            jac_vec = jac(model, x, func_i, param_i)[:]
+            current_col = vcat(current_col, jac_vec) # Concatenate vectors
         end
-        current_col = collect(Iterators.flatten(current_col)) # Flatten, flet allt
-        # --- Spurning hvort hægt sé að gera þetta skilvirkara?
-        # --- Held samt að Iterators pakkinn eigi að vera nokkuð skilvirkur
-
-        Jacob[:, func_i] .= current_col # geri current_col að næsta dálka vigri jacobian
+        
+        for k = 1:total_amount_of_θ 
+            Jacob[k, func_i] = current_col[k]
+        end
     end
-
-    ###
-    ###
-    ###
-    ###
-    ### ATH HÉR ER BREYTINGIN OKKAR
-    # Remove the last row
-    Jacob = Jacob[1:end-1, :]
-
+    
     return Jacob # Þetta er Df fylkið í bilblíunni
 end
 
