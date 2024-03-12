@@ -1,21 +1,21 @@
 using Flux
 
 struct DenseNTK
-    weight  # Weight
-    bias  # Bias
+    weight  # weight: initialized to N(0,1)/sqrt(in)
+    bias  # bias: initialized to N(0,1)
     σ  # activation function
 end
 
 function DenseNTK((in, out)::Pair, σ=identity; bias=true, init=Flux.randn32)
-  weight = init(out, in)
-  bias = Flux.create_bias(weight, bias, out)
-  DenseNTK(weight, bias, σ)
+    weight = init(out, in)
+    bias = ( bias==true ? vec(Flux.randn32(out)) : Flux.create_bias(weight, bias, out) )
+    DenseNTK(weight, bias, σ)
 end
 
 function DenseNTK(in::Integer, out::Integer, σ=identity; bias=true, init=Flux.randn32)
-  weight = init(out, in)
-  bias = Flux.create_bias(weight, bias, out)
-  DenseNTK(weight, bias, σ)
+    weight = init(out, in)
+    bias = ( bias==true ? vec(Flux.randn32(out)) : Flux.create_bias(weight, bias, out) )
+    DenseNTK(weight, bias, σ)
 end
 
 function (m::DenseNTK)(x::Vector)
@@ -32,7 +32,5 @@ function (m::DenseNTK)(x::Array)
     σ = NNlib.fast_act(m.σ, x)  # replaces tanh => tanh_fast, etc
     return σ.((m.weight/sqrt(size(m.weight)[2]))*x .+ m.bias)
 end
-
-
 
 Flux.@functor DenseNTK
