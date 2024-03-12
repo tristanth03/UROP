@@ -119,13 +119,15 @@ function Df(model, x)
     return Jacob # Þetta er Df fylkið í bilblíunni
 end
 
-function kernel(model, x)
+using ProgressMeter
+
+function kernel(model, x, show_progress=false)
     N = check_dim(x)
     m = length(model(x[:,1]))  # Number of functions in the model output
     K = zeros(N*m, N*m)
-    
-    if N == 1
-        K = Df(model,x)'*Df(model,x)
+
+    if show_progress
+        p = Progress(N, 1, "Computing kernel:", 50)
     end
 
     for i = 1:N
@@ -133,6 +135,13 @@ function kernel(model, x)
             block = Df(model, x[:,i])' * Df(model, x[:,j])
             K[(i-1)*m+1:i*m, (j-1)*m+1:j*m] .= block
         end
+        if show_progress
+            next!(p)  # Increment progress meter
+        end
+    end
+
+    if show_progress
+        finish!(p)  # Finish progress meter
     end
 
     return K
