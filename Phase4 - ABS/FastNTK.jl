@@ -12,7 +12,7 @@ function check_dim(x)
     end
 end
 
-function kernel(model, x, show_progress=false)
+function Fkernel(model, x, show_progress=false)
     N = check_dim(x)                    # Number of datapoints
     m = length(model(x[:,1]))           # Number of functions in the model output
 
