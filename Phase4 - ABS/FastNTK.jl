@@ -25,7 +25,7 @@ function kernel(model, x, show_progress=false)
     ∂(f,x) = D[(f-m)+(x*m),:]           # Used in nested loop for readability
 
     if show_progress
-        progress_Θ = Progress(m, 1, "Computing Θ:", 50)
+        progress_Θ = Progress(N * m^2, 1)   # Initialize progress meter for Θ
     end
 
     for k = 1:m
@@ -35,13 +35,18 @@ function kernel(model, x, show_progress=false)
                 for j = 1:N
                     mini_kernel[i,j] = dot(∂(k,i),∂(l,j))
                 end
+                if show_progress
+                    next!(progress_Θ)   # Increment progress meter Θ
+                end
             end
+
             # Add mini_kernel to the corresponding portion of Θ
             Θ[(k-1)*N+1:k*N, (l-1)*N+1:l*N] .= mini_kernel
         end
-        if show_progress
-            next!(progress_Θ)           # Increment progress meter Θ
-        end
+    end
+
+    if show_progress
+        finish!(progress_Θ)  # Finish progress meter
     end
 
     return Θ
