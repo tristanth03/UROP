@@ -1,4 +1,3 @@
-# Author: Axel Bjarkar
 using Flux, LinearAlgebra, ProgressMeter
 
 function check_dim(x)
@@ -23,7 +22,7 @@ function kernel(model, x, show_progress=false)
     D = hcat([grad for grad in D]...)
     D = D[:,1:end-1]                    # To skip the last bias
 
-    ∂(f,x) = D[(f-m)+(x*m),:]           # Used in nested for readabiity
+    ∂(f,x) = D[(f-m)+(x*m),:]           # Used in nested loop for readability
 
     if show_progress
         progress_Θ = Progress(m, 1, "Computing Θ:", 50)
