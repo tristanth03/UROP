@@ -16,7 +16,7 @@ function kernel(model, x, show_progress=false)
     N = check_dim(x)                    # Number of datapoints
     m = length(model(x[:,1]))           # Number of functions in the model output
 
-    Θ = zeros(N*(m*m), N*(m*m))         # Kernel is depecicted in research papers and Wikipedia
+    Θ = zeros(N*m, N*m)                 # Kernel as depecicted in research papers and Wikipedia
 
     D = Flux.jacobian(() -> model(x),Flux.params(model))
     D = hcat([grad for grad in D]...)
