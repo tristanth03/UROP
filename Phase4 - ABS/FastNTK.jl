@@ -25,7 +25,7 @@ function kernel(model, x, show_progress=false)
     ∂(f,x) = D[(f-m)+(x*m),:]           # Used in nested loop for readability
 
     if show_progress
-        progress_Θ = Progress(N * m^2, 1)   # Initialize progress meter for Θ
+        progress_Θ = Progress(N * m, 1)   # Initialize progress meter for Θ
     end
 
     for k = 1:m
