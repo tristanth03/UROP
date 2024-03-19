@@ -25,7 +25,7 @@ function kernel(model, x, show_progress=false)
     ∂(f,x) = D[(f-m)+(x*m),:]           # Used in nested loop for readability
 
     if show_progress
-        progress_Θ = Progress(N * m, 1)   # Initialize progress meter for Θ
+        progress_Θ = Progress(N * m*m, 1)   # Initialize progress meter for Θ
     end
 
     for k = 1:m
@@ -47,6 +47,36 @@ function kernel(model, x, show_progress=false)
 
     if show_progress
         finish!(progress_Θ)  # Finish progress meter
+    end
+
+    return Θ
+end
+
+function faster_kernel(model, x, show_progress=false)
+    N = check_dim(x)                    # Number of datapoints
+    m = length(model(x[:,1]))           # Number of functions in the model output
+
+    Θ = zeros(N*m, N*m)                 # Kernel as depecicted in research papers and Wikipedia
+
+    D = Flux.jacobian(() -> model(x), Flux.params(model))
+    D = hcat([grad for grad in D]...)
+    D = D[:,1:end-1]                    # To skip the last bias
+
+    ∂x(i) = (((i-1)*m)+1:i*m)           # Used in nested loop for readability
+
+    if show_progress
+        prog = Progress(N^2, 1, "Computing Kernel...", 50)
+    end
+
+    for i = 1:N
+        for j = 1:N
+            block = D[∂x(i),:]*D[∂x(j),:]'        # Will produce mxm matrix
+            Θ[∂x(i),∂x(j)] .= block
+            
+            if show_progress
+                next!(prog)
+            end
+        end
     end
 
     return Θ
