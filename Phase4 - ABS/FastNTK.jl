@@ -111,3 +111,22 @@ function fastest_kernel(model, x, show_progress=false)
 
     return Θ
 end
+
+function ult_kernel(model, x)
+    t1 = time()  # Record the start time
+
+    D = Flux.jacobian(() -> model(x), Flux.params(model))
+    D = hcat([Float32.(grad) for grad in D]...)
+    D = D[:, 1:end-1]  # To skip the last bias
+
+    t2 = time()  # Record the time after calculating D
+
+    Θ = D * D'
+
+    t3 = time()  # Record the time after calculating Θ
+
+    println("Time taken to calculate D: ", t2 - t1)
+    println("Time taken to calculate Θ: ", t3 - t2)
+
+    return Θ
+end
