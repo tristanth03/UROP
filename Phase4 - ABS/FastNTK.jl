@@ -1,4 +1,4 @@
-using Flux, LinearAlgebra, ProgressMeter
+using Flux, LinearAlgebra, ProgressMeter, Zygote
 
 function check_dim(x)
     """This function checks the appropriate  dimensions of input data"""
@@ -88,26 +88,35 @@ function fastest_kernel(model, x, show_progress=false)
 
     Θ = zeros(Float32, N*m, N*m)        # Kernel as depicted in research papers and Wikipedia
 
+    t1 = time()  # Record the start time
+
     D = Flux.jacobian(() -> model(x), Flux.params(model))
     D = hcat([Float32.(grad) for grad in D]...)
     D = D[:,1:end-1]                    # To skip the last bias
 
     ∂x(i) = (((i-1)*m)+1:i*m)           # Used in nested loop for readability
 
-    if show_progress
-        prog = Progress(N^2, 1, "Computing Kernel...", 50)
-    end
+    t2 = time()  # Record the time after calculating D
 
-    for i = 1:N
-        for j = 1:N
-            block = D[∂x(i),:]*D[∂x(j),:]'        # Will produce mxm matrix
-            Θ[∂x(i),∂x(j)] .= block
+    # if show_progress
+    #     prog = Progress(N^2, 1, "Computing Kernel...", 50)
+    # end
+
+    # for i = 1:N
+    #     for j = 1:N
+    #         block = D[∂x(i),:]*D[∂x(j),:]'        # Will produce mxm matrix
+    #         Θ[∂x(i),∂x(j)] .= block
             
-            if show_progress
-                next!(prog)
-            end
-        end
-    end
+    #         if show_progress
+    #             next!(prog)
+    #         end
+    #     end
+    # end
+
+    t3 = time()  # Record the time after calculating Θ
+
+    println("Time taken to calculate Jacobian: ", t2 - t1)
+    println("Time taken to contrsuct Kernel: ", t3 - t2)
 
     return Θ
 end
@@ -115,9 +124,11 @@ end
 function ult_kernel(model, x)
     t1 = time()  # Record the start time
 
-    D = Flux.jacobian(() -> model(x), Flux.params(model))
-    D = hcat([Float32.(grad) for grad in D]...)
-    D = D[:, 1:end-1]  # To skip the last bias
+    D = Zygote.jacobian(() -> model(x), Flux.params(model))
+    D = hcat([(grad) for grad in D]...)
+
+    lastbias = length(Flux.params(model)[length(Flux.params(model))])
+    D = D[:, 1:end-lastbias]  # To skip the last bias
 
     t2 = time()  # Record the time after calculating D
 
@@ -125,8 +136,39 @@ function ult_kernel(model, x)
 
     t3 = time()  # Record the time after calculating Θ
 
-    println("Time taken to calculate D: ", t2 - t1)
-    println("Time taken to calculate Θ: ", t3 - t2)
+    println("Time taken to calculate Jacobian: ", t2 - t1)
+    println("Time taken to contrsuct Kernel: ", t3 - t2)
+
+    return Θ
+end
+
+function split_ult(model, x, show_progress=false)
+    N = check_dim(x)
+    m = length(model(x[:,1]))
+    k = length(Flux.destructure(model)[1])
+    lastbias = length(Flux.params(model)[length(Flux.params(model))])
+    
+    Df = zeros(N*m, k)
+
+    if show_progress
+        prog = Progress(N, 1)
+    end
+
+    for i = 1:N
+        D = Zygote.jacobian(() -> model(x[:,i]), Flux.params(model))
+        D = hcat([(grad) for grad in D]...) # is m*k matrix
+
+        Df[(i-1)*m+1:i*m, :] .= D  
+
+        next!(prog)  # Update progress meter
+    end
+
+    Df = Df[:, 1:end-lastbias] # remove bias
+
+    t2 = time()  
+    Θ = Df * Df'   # Construct Kernel
+    t3 = time()  
+    println("Time taken to contrsuct Kernel: ", t3 - t2)
 
     return Θ
 end
