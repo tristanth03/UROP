@@ -100,7 +100,6 @@ function Jacobian_Zygote(model,x, show_progress)
     return D
 end
 
-
 function kernel(model, x, show_progress = false, diff_mode = 1)
     if diff_mode == 1 || diff_mode == 2 
         Jacobian = Jacobian_ReverseDiff(model, x, show_progress, diff_mode)
