@@ -33,4 +33,17 @@ function (m::DenseNTK)(x::Array)
     return σ.((m.weight/sqrt(size(m.weight)[2]))*x .+ m.bias)
 end
 
+### FOR DIFFERENT DIFF PACKAGES
+function (m::DenseNTK)(x::ReverseDiff.TrackedArray)
+    # Extend methods for handling ReverseDiff.TrackedArray
+    σ = NNlib.fast_act(m.σ, x)
+    return σ.((m.weight/sqrt(size(m.weight)[2]))*x .+ m.bias)
+end
+
+function (m::DenseNTK)(x::Tracker.TrackedVector)
+    # Extend methods for handling ReverseDiff.TrackedArray
+    σ = NNlib.fast_act(m.σ, x)
+    return σ.((m.weight/sqrt(size(m.weight)[2]))*x .+ m.bias)
+end
+
 Flux.@functor DenseNTK

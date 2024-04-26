@@ -1,4 +1,4 @@
-using Flux
+using Flux, ReverseDiff, Tracker
 
 struct DenseNTK
     weight  # weight: initialized to N(0,1)/sqrt(in)
@@ -33,7 +33,14 @@ function (m::DenseNTK)(x::Array)
     return σ.((m.weight/sqrt(size(m.weight)[2]))*x .+ m.bias)
 end
 
+### FOR DIFFERENT DIFF PACKAGES
 function (m::DenseNTK)(x::ReverseDiff.TrackedArray)
+    # Extend methods for handling ReverseDiff.TrackedArray
+    σ = NNlib.fast_act(m.σ, x)
+    return σ.((m.weight/sqrt(size(m.weight)[2]))*x .+ m.bias)
+end
+
+function (m::DenseNTK)(x::Tracker.TrackedVector)
     # Extend methods for handling ReverseDiff.TrackedArray
     σ = NNlib.fast_act(m.σ, x)
     return σ.((m.weight/sqrt(size(m.weight)[2]))*x .+ m.bias)

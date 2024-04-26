@@ -100,13 +100,48 @@ function Jacobian_Zygote(model,x, show_progress)
     return D
 end
 
+function Jacobian_Tracker(model,x, show_progress)
+    ### REIKNA JACOBIAN
+    l = length(model(x[:,1]))
+    params, restruct = Flux.destructure(model)
+    Jacobian = zeros(N*l,length(params))
+
+    if show_progress
+        @time "\nTracker Jacobian" begin
+            @showprogress for i = 1:size(x)[2]
+                h = (p) -> begin
+                    mod = restruct(p)
+                    y = mod(x[:,i])
+                end
+                d = Tracker.data(Tracker.jacobian(h, params))
+                Jacobian[(i-1)*l+1:i*l, :] .= d
+            end
+            Jacobian = remove_last_bias(model, Jacobian)
+        end # time ends
+    else
+        for i = 1:size(x)[2]
+            h = (p) -> begin
+                mod = restruct(p)
+                y = mod(x[:,i])
+            end
+            d = Tracker.data(Tracker.jacobian(h, params))
+            Jacobian[(i-1)*l+1:i*l, :] .= d
+        end
+        Jacobian = remove_last_bias(model, Jacobian)
+    end
+
+    return Jacobian
+end
+
 function kernel(model, x, show_progress = false, diff_mode = 1)
     if diff_mode == 1 || diff_mode == 2 
         Jacobian = Jacobian_ReverseDiff(model, x, show_progress, diff_mode)
     elseif diff_mode == 3
         Jacobian = Jacobian_Zygote(model, x, show_progress)
+    elseif diff_mode == 4
+        Jacobian = Jacobian_Tracker(model, x, show_progress)
     else
-        error("\nThere are only 3 modes of differentiation\nMode $diff_mode does not exist\n\n1. ReverseDiff    Complied tape\n2. ReverseDiff    Uncompiled tape\n3. Zygote         All together\n")
+        error("\nThere are only 3 modes of differentiation\nMode $diff_mode does not exist\n\n1. ReverseDiff    Complied tape\n2. ReverseDiff    Uncompiled tape\n3. Zygote         All together\n4. Tracker        All togehter\n")
     end
 
     if show_progress
