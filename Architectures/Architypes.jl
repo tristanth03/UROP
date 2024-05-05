@@ -16,6 +16,19 @@ include("DenseNTK.jl")
 
     Model architypes (simplified ASCII art):
 
+    "LH1" - for one hidden layer
+        
+                |            
+    |           |           |
+    |           |           |
+    |           |           |
+                |            
+
+    ↑           ↑           ↑
+    dimIN   critical_width  dimOUT 
+
+
+
     "block"
     
         |   |   |   |   | 
@@ -143,8 +156,6 @@ function construct_model_with_widths(depth, widths, activation)
     model = Chain(layers...)
     return model
 end
-
-
 
 ### ----- WIDTH FUNCTIONS
 function widths_block(dimIN, dimOUT, depth, width)
