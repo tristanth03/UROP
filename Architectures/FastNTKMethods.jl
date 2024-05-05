@@ -134,6 +134,12 @@ function Jacobian_Tracker(model,x, show_progress)
     return Jacobian
 end
 
+"""
+    1: ReverseDiff Tape
+    2: ReverseDiff No Tape
+    3: Zygote
+    4: Tracker
+"""
 function kernel(model, x, show_progress = false, diff_mode = 1)
     if diff_mode == 1 || diff_mode == 2 
         Jacobian = Jacobian_ReverseDiff(model, x, show_progress, diff_mode)

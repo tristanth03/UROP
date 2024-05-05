@@ -10,10 +10,9 @@ include("DenseNTK.jl")
 
 ### ----- FUNCTIONS
 """
-    model_architype(architype, dimIN, dimOUT, depth, activation, critical_width=Nothing)
-    
     NOTE: depth is ALL LAYERS (input, hidden and output)
-
+    NOTE: critical_width is the width of the hidden layer that is critical for the model to work
+    
     Model architypes (simplified ASCII art):
 
     "LH1" - for one hidden layer (so depth=3 for this case)
@@ -219,15 +218,15 @@ function widths_hourglass(dimIN, dimOUT, depth, min_width)
         widths[middle_layer] = min_width
 
         # Calculate decreasing widths from the input to the middle layer
-        decrease_step = (dimIN - min_width) / (middle_index - 1)
-        for i in 1:(middle_index-1)
+        decrease_step = (dimIN - min_width) / (middle_layer - 1)
+        for i in 1:(middle_layer-1)
             widths[i] = dimIN - round(Int, decrease_step * (i - 1))
         end
 
         # Calculate increasing widths from the middle layer to the output
-        increase_step = (dimOUT - min_width) / (middle_index - 1)
-        for i in (middle_index+1):depth
-            widths[i] = min_width + round(Int, increase_step * (i - middle_index))
+        increase_step = (dimOUT - min_width) / (middle_layer - 1)
+        for i in (middle_layer+1):depth
+            widths[i] = min_width + round(Int, increase_step * (i - middle_layer))
         end
     end
     widths[depth] = dimOUT
@@ -293,3 +292,9 @@ function depth_validation(depth)
         error("Depth must be at least 3 to form an ANN.\nBeware that 'depth' refers to ALL layers.")
     end
 end
+
+include("FastNTKMethods.jl")
+x = hcat([5 6 7 8 9 10])
+m = model_architype("block", 1, 10, 5+2,σ,300)
+
+@time K = kernel(m,x,true,4)
