@@ -22,7 +22,7 @@ include("DenseNTK.jl")
 
                 |            
     |           |           |
-    |           |           |
+    |  <--σ-->  |           |
     |           |           |
                 |            
 
@@ -113,6 +113,7 @@ include("DenseNTK.jl")
 function model_architype(architype, dimIN, dimOUT, depth, activation, critical_width=Nothing)
     depth_validation(depth)
 
+    # Get appropriate width
     if architype == "LH1"
         widths = [dimIN, critical_width, dimOUT]
         depth = 3
@@ -132,12 +133,7 @@ function model_architype(architype, dimIN, dimOUT, depth, activation, critical_w
         error("'$architype' is not a valid architecture type\n\n$current_types$(join(supported_types, '\n'))\n")
     end
 
-    model = construct_model_with_widths(depth, widths, activation)
-
-    return model
-end
-
-function construct_model_with_widths(depth, widths, activation)
+    # Model construction
     layers = []
     if isa(activation, Function)
         # All layers use the same activation function
@@ -157,8 +153,10 @@ function construct_model_with_widths(depth, widths, activation)
     end
 
     model = Chain(layers...)
+
     return model
 end
+
 
 ### ----- WIDTH FUNCTIONS
 function widths_block(dimIN, dimOUT, depth, width)
@@ -292,6 +290,6 @@ end
 
 function depth_validation(depth)
     if depth < 3
-        error("Depth must be at least 3 to form an ANN.")
+        error("Depth must be at least 3 to form an ANN.\nBeware that 'depth' refers to ALL layers.")
     end
 end
