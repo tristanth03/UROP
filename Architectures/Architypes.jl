@@ -16,8 +16,10 @@ include("DenseNTK.jl")
 
     Model architypes (simplified ASCII art):
 
-    "LH1" - for one hidden layer
-        
+    "LH1" - for one hidden layer (so depth=3 for this case)
+    
+    <---------depth--------->
+
                 |            
     |           |           |
     |           |           |
@@ -113,6 +115,7 @@ function model_architype(architype, dimIN, dimOUT, depth, activation, critical_w
 
     if architype == "LH1"
         widths = [dimIN, critical_width, dimOUT]
+        depth = 3
     elseif architype == "block"
         widths = widths_block(dimIN, dimOUT, depth, critical_width)
     elseif architype == "funnel"
