@@ -1,4 +1,4 @@
-using Flux, ReverseDiff, LinearAlgebra, ProgressMeter
+using Flux, ReverseDiff, LinearAlgebra, ProgressMeter, Zygote
 
 function check_dim(x)
     """This function checks the appropriate  dimensions of input data"""

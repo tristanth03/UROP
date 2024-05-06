@@ -292,9 +292,3 @@ function depth_validation(depth)
         error("Depth must be at least 3 to form an ANN.\nBeware that 'depth' refers to ALL layers.")
     end
 end
-
-include("FastNTKMethods.jl")
-x = hcat([5 6 7 8 9 10])
-m = model_architype("block", 1, 10, 5+2,σ,300)
-
-@time K = kernel(m,x,true,4)
