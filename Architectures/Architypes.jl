@@ -64,18 +64,18 @@ include("DenseNTK.jl")
 
         "reverse_funnel"
 
-                            |   
-                        |   |
+                        |       
+                        |    
                     |   |   |
                 |   |   |   |
             |   |   |   |   |
                 |   |   |   |
                     |   |   |
-                        |   |   
-                            |
+                        |       
+                        |    
                     
-            ↑               ↑
-        dimIN           dimOUT 
+            ↑           ↑   ↑
+        dimIN         cri   dimOUT 
 
 
 
