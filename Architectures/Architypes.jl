@@ -81,18 +81,18 @@ include("DenseNTK.jl")
 
         "hourglass"
 
-            |                           |
-            |   |                   |   |
+                |                   |    
+                |                   |    
             |   |   |           |   |   |
             |   |   |   |   |   |   |   |
             |   |   |   |   |   |   |   |  
             |   |   |   |   |   |   |   |
             |   |   |           |   |   |    
-            |   |                   |   |
-            |                           |
+                |                   |    
+                |                   |    
             
-            ↑           ↑   ↑           ↑
-        dimIN    critical_width    dimOUT 
+            ↑   ↑                   ↑   ↑
+        dimIN      critical_width       dimOUT 
 
 
 
@@ -146,7 +146,7 @@ include("DenseNTK.jl")
             # Different activation for each layer
             do_activations_match_depth(depth, activation)
             for i in 1:depth-1
-                act = i < depth-1 ? activation[i] : identity
+                 act = i < depth-1 ? activation[i] : identity
                 push!(layers, DenseNTK(widths[i], widths[i+1], act))
             end
         else
@@ -198,43 +198,49 @@ include("DenseNTK.jl")
         return widths
     end
 
-    function widths_hourglass(dimIN, dimOUT, depth, min_width)
-        widths = zeros(Int, depth) # n - Zero Vector
-        if depth%2 == 0
-            middle_layers = (depth ÷ 2, depth ÷ 2 + 1)
-            widths[middle_layers[1]], widths[middle_layers[2]] = min_width, min_width
-
-            # Calculate decrease and increase steps
-            decrease_step = (dimIN - min_width) / (middle_layers[1] - 1)
-            increase_step = (dimOUT - min_width) / (middle_layers[1] - 1)
-
-            # Set widths for decreasing and increasing phases
-            for i in 1:(middle_layers[1] - 1)
-                widths[i] = dimIN - round(Int, decrease_step * (i - 1))
-            end
-            for i in (middle_layers[2] + 1):depth
-                widths[i] = min_width + round(Int, increase_step * (i - middle_layers[2]))
-            end
-        else
-            middle_layer = ceil(Int, depth/2)
-            widths[middle_layer] = min_width
-
-            # Calculate decreasing widths from the input to the middle layer
-            decrease_step = (dimIN - min_width) / (middle_layer - 1)
-            for i in 1:(middle_layer-1)
-                widths[i] = dimIN - round(Int, decrease_step * (i - 1))
-            end
-
-            # Calculate increasing widths from the middle layer to the output
-            increase_step = (dimOUT - min_width) / (middle_layer - 1)
-            for i in (middle_layer+1):depth
-                widths[i] = min_width + round(Int, increase_step * (i - middle_layer))
-            end
+    function widths_hourglass(dimIN::Int, dimOUT::Int, depth::Int, critical_width::Int)
+        if depth < 5
+            error("Depth must be at least 5 for the hourglass architecture to work.")
         end
+    
+        widths = zeros(Int, depth)
+        middle = ceil(Int, depth / 2.0)
+        
+        # Calculate min_width as the critical width divided by (middle - 2)
+        min_width = round(Int, critical_width / (middle - 2))
+        
+        # Set the input and output layersa
+        widths[1] = dimIN
         widths[depth] = dimOUT
-
+    
+        # First and last hidden layers have the critical width
+        widths[2] = critical_width
+        widths[depth-1] = critical_width
+        widths[middle] = min_width
+    
+        if depth%2==0 #EVEN
+            widths[middle+1] = min_width
+            offset = 1
+        else
+            # ODD
+            offset = 0
+        end
+    
+        step = (critical_width - min_width) / (middle - 2)
+            
+        # Decrease
+        for i in 3:middle-1
+            widths[i] = critical_width - round(Int, step * (i - 2))
+        end
+    
+        # Increase
+        for i in middle+1+offset:depth-2
+            widths[i] = min_width + round(Int, step * (i - middle-offset))
+        end
+    
         return widths
     end
+    
 
     function widths_diamond(dimIN::Int, dimOUT::Int, depth::Int, max_width::Int)
         widths = zeros(Int, depth)
@@ -365,9 +371,9 @@ function block(dimIN, dimOUT, depth, approx_num_params, activations)
     return construct_model(widths, activations)
 end
 
-function estimate_architecture(architype, dimIN, dimOUT, approx_num_params, ref_block, time_out = 100)
-    MIN = 1
-    MAX = 3
+function estimate_architecture(architype, dimIN, dimOUT, approx_num_params, ref_block, min=1, max=3, time_out = 100)
+    MIN = min
+    MAX = max
     THRESHOLD = 0.01
 
     iteration = 0
