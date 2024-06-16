@@ -9,21 +9,21 @@ include("FastNTKMethods.jl")
 
 
 
-function LR_mapping(x,f,model,N1,intensity)
+function LR_mapping(x,f,model,N1,intensity,iterations)
     
     N = size(x)[2]
 
     if intensity == 1
-        t_step = 20
+        t_step = iterations*(1*10^-4)
         param_num1 = 1; param_num2 = Int128(round(N1*0.1)); layer = 1; gap=10;
     elseif intensity == 2
-        t_step = 20
+        t_step = iterations*(1*10^-4)
         param_num1 = 1; param_num2 = Int128(round(N1*0.5)); layer = 1; gap=2; 
     elseif intensity == 3
-        t_step = 50
+        t_step = iterations*(1*10^-4)
         param_num1 = 1; param_num2 = Int128(N1); layer = 1; gap=1;
     elseif intensity == 4
-        t_step = 100_000
+        t_step = iterations*(1*10^-4)
         param_num1 = 1; param_num2 = Int128(N1); layer = 1;  gap=1;# (Very heavy)
     end
 
@@ -88,9 +88,10 @@ function LR_mapping(x,f,model,N1,intensity)
 end
 
 
-function LR_updt(h,x0,xn,N1,detail)
+function LR_updt(h,x0,xn,N1,detail,iterations)
     intensity = detail
-    LR_map = LR_mapping(x,f,model,N1,intensity)
+    iterations = iterations
+    LR_map = LR_mapping(x,f,model,N1,intensity,iterations)
     d = vcat(range(x0,stop=xn,step=h)...)
     MAT = [ones(size(d)[1],1) vcat(range(x0,stop=xn,step=h)...)]
 
