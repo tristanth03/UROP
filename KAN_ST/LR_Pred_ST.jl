@@ -7,13 +7,7 @@ include("FastNTKMethods.jl")
 ## kernel
 ## intensity (learning rate specific dynamics, t_step,epochs, param_num)
 
-h = 0.2; x0 = -1.0; xn = 1.0; activation = relu; dim = 1; N1 = 10_000
-# We create some data (normalized)
-x = hcat(range(x0,stop=xn,step=h)...)
-f = x->sin(5*x)+cos(5*x)
 
-model = Chain(DenseNTK(dim=>N1,activation),DenseNTK(N1=>dim))|>f64
-intensity = 1
 
 function LR_mapping(x,f,model,N1,intensity)
 
@@ -94,9 +88,6 @@ function LR_mapping(x,f,model,N1,intensity)
 end
 
 
- 
-
-
 function LR_updt(h,x0,xn,N1)
     LR_map = LR_mapping(x,f,model,N1,intensity)
     d = vcat(range(x0,stop=xn,step=h)...)
@@ -113,4 +104,3 @@ function LR_updt(h,x0,xn,N1)
     return LR_opt2*sqrt(N1)
 end
 
-LR_opt2 = 1/LR_updt(h,x0,xn,N1)
