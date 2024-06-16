@@ -88,7 +88,8 @@ function LR_mapping(x,f,model,N1,intensity)
 end
 
 
-function LR_updt(h,x0,xn,N1)
+function LR_updt(h,x0,xn,N1,detail)
+    intensity = detail
     LR_map = LR_mapping(x,f,model,N1,intensity)
     d = vcat(range(x0,stop=xn,step=h)...)
     MAT = [ones(size(d)[1],1) vcat(range(x0,stop=xn,step=h)...)]
