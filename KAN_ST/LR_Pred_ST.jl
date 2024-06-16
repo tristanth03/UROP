@@ -58,8 +58,9 @@ function LR_mapping(x,f,model,N1,intensity)
         dfs = J[:,param_num]
         Z = zeros(N,1)
 
+
         for i = 1:N
-        
+            @time begin
             t = (i-1)*t_step
             model[1].weight .= params_0[1]
             model[1].bias .= params_0[2]
@@ -70,7 +71,7 @@ function LR_mapping(x,f,model,N1,intensity)
             elseif t > 0
                 model[layer].weight[param_num] = params_t[t][layer][param_num]
             end
-            
+            end
             
             A = exp(-K*t)
 
