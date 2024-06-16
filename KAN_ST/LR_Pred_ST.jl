@@ -10,21 +10,21 @@ include("FastNTKMethods.jl")
 
 
 function LR_mapping(x,f,model,N1,intensity)
-
+    
     N = size(x)[2]
 
     if intensity == 1
-        t_step = 100
-        param_num1 = 1; param_num2 = Int128(N1); layer = 1;  
+        t_step = 50
+        param_num1 = 1; param_num2 = Int128(round(N1*0.1)); layer = 1; gap=10;
     elseif intensity == 2
-        t_step = 1_000
-        param_num1 = 1; param_num2 = Int128(N1); layer = 1;
+        t_step = 50
+        param_num1 = 1; param_num2 = Int128(N1); layer = 1; gap=1;
     elseif intensity == 3
         t_step = 10_000
-        param_num1 = 1; param_num2 = Int128(N1); layer = 1;
+        param_num1 = 1; param_num2 = Int128(N1); layer = 1; gap=1;
     elseif intensity == 4
         t_step = 100_000
-        param_num1 = 1; param_num2 = Int128(N1); layer = 1; # (Very heavy)
+        param_num1 = 1; param_num2 = Int128(N1); layer = 1;  gap=1;# (Very heavy)
     end
 
 
@@ -35,7 +35,6 @@ function LR_mapping(x,f,model,N1,intensity)
     data = [(x,y)]
     params_0 = deepcopy(Flux.params(model))
     K = kernel(model,x,false,3)
-    params_0 = deepcopy(Flux.params(model))
     eig = eigen(K).values
 
     
@@ -54,13 +53,13 @@ function LR_mapping(x,f,model,N1,intensity)
     LR = []
 
     J = Jacobian_Zygote(model,x, false)
-    @showprogress for param_num = param_num1:param_num2
+    @showprogress for param_num = param_num1:gap:param_num2
         dfs = J[:,param_num]
         Z = zeros(N,1)
 
 
         for i = 1:N
-            @time begin
+
             t = (i-1)*t_step
             model[1].weight .= params_0[1]
             model[1].bias .= params_0[2]
@@ -71,7 +70,7 @@ function LR_mapping(x,f,model,N1,intensity)
             elseif t > 0
                 model[layer].weight[param_num] = params_t[t][layer][param_num]
             end
-            end
+            
             
             A = exp(-K*t)
 
@@ -83,7 +82,7 @@ function LR_mapping(x,f,model,N1,intensity)
 
         push!(LR,Z)
     end
-
+    
     return LR
     
 end
