@@ -15,15 +15,15 @@ function LR_mapping(x,f,model,N1,intensity)
 
     if intensity == 1
         t_step = 100
-        param_num1 = 1; param_num2 = Int128(round(N1*0.1)); layer = 1;  
+        param_num1 = 1; param_num2 = Int128(N1); layer = 1;  
     elseif intensity == 2
-        t_step = 100
+        t_step = 1_000
         param_num1 = 1; param_num2 = Int128(N1); layer = 1;
     elseif intensity == 3
-        t_step = 1000
-        param_num1 = 1; param_num2 = Int128(round(N1*0.1)); layer = 1;
+        t_step = 10_000
+        param_num1 = 1; param_num2 = Int128(N1); layer = 1;
     elseif intensity == 4
-        t_step = 10000
+        t_step = 100_000
         param_num1 = 1; param_num2 = Int128(N1); layer = 1; # (Very heavy)
     end
 
