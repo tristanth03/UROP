@@ -14,13 +14,13 @@ function LR_mapping(x,f,model,N1,intensity)
     N = size(x)[2]
 
     if intensity == 1
-        t_step = 50
+        t_step = 20
         param_num1 = 1; param_num2 = Int128(round(N1*0.1)); layer = 1; gap=10;
     elseif intensity == 2
-        t_step = 50
-        param_num1 = 1; param_num2 = Int128(N1); layer = 1; gap=1;
+        t_step = 20
+        param_num1 = 1; param_num2 = Int128(round(N1*0.5)); layer = 1; gap=2; 
     elseif intensity == 3
-        t_step = 10_000
+        t_step = 50
         param_num1 = 1; param_num2 = Int128(N1); layer = 1; gap=1;
     elseif intensity == 4
         t_step = 100_000
