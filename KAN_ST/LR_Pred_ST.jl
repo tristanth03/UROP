@@ -9,21 +9,25 @@ include("FastNTKMethods.jl")
 
 
 
-function LR_mapping(x,f,model,N1,intensity,iterations)
-    
-    N = size(x)[2]
+function LR_mapping(x,f,model,intensity,iterations)
 
+    N = size(x)[2]
+    N1 = size(Flux.params(model)[1])[1] 
+
+    if iterations < 1*10^3
+        println("More iterations are needed!")
+    end
     if intensity == 1
-        t_step = Int128(iterations*(1*10^-5))
+        t_step = Int128(iterations*(1*10^-3))
         param_num1 = 1; param_num2 = Int128(round(N1*0.1)); layer = 1; gap=10;
     elseif intensity == 2
-        t_step = Int128(iterations*(1*10^-5))
+        t_step = Int128(iterations*(1*10^-3))
         param_num1 = 1; param_num2 = Int128(round(N1*0.5)); layer = 1; gap=2; 
     elseif intensity == 3
-        t_step = Int128(iterations*(1*10^-5))
+        t_step = Int128(iterations*(1*10^-3))
         param_num1 = 1; param_num2 = Int128(N1); layer = 1; gap=1;
     elseif intensity == 4
-        t_step = Int128(iterations*(1*10^-3))
+        t_step = Int128(iterations*(1*10^-2))
         param_num1 = 1; param_num2 = Int128(N1); layer = 1;  gap=1;# (Very heavy)
     end
 
@@ -82,16 +86,16 @@ function LR_mapping(x,f,model,N1,intensity,iterations)
 
         push!(LR,Z)
     end
-    
-    return LR
+
+    return LR,K,eig,N1
     
 end
 
 
-function LR_updt(h,x0,xn,N1,detail,iterations)
+function LR_updt(h,x0,xn,detail,iterations)
     intensity = detail
     iterations = iterations
-    LR_map = LR_mapping(x,f,model,N1,intensity,iterations)
+    LR_map,K,eig,N1 = LR_mapping(x,f,model,intensity,iterations)
     d = vcat(range(x0,stop=xn,step=h)...)
     MAT = [ones(size(d)[1],1) vcat(range(x0,stop=xn,step=h)...)]
 
@@ -103,6 +107,6 @@ function LR_updt(h,x0,xn,N1,detail,iterations)
 
     LR_opt2 = maximum(abs.(LR_opting))
 
-    return LR_opt2*sqrt(N1)
+    return LR_opt2*sqrt(N1),K,eig
 end
 
