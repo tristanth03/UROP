@@ -87,13 +87,13 @@ module KAN
         return base_output + spline_output'
     end
 
-    struct KAN #change var name
+    struct KAN_struct #change var name
         layers::Vector{KANLinear}
     end
 
     Flux.@functor KAN
 
-    function KAN(layers_hidden; grid_size=5, spline_order=3, scale_noise=0.1, scale_base=1.0, scale_spline=1.0, base_activation=sigmoid, grid_eps=0.02, grid_range=(-1, 1))
+    function KAN_func(layers_hidden; grid_size=5, spline_order=3, scale_noise=0.1, scale_base=1.0, scale_spline=1.0, base_activation=sigmoid, grid_eps=0.02, grid_range=(-1, 1))
         layers = [KANLinear(inf, outf; grid_size=grid_size, spline_order=spline_order, scale_noise=scale_noise, scale_base=scale_base, scale_spline=scale_spline, base_activation=base_activation, grid_eps=grid_eps, grid_range=grid_range) for (inf, outf) in zip(layers_hidden[1:end-1], layers_hidden[2:end])]
         KAN(layers)
     end
